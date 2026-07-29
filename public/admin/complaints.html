@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("mesob_admin_theme")||"light")</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESOB Superadmin — Complaints</title>
+<link rel="stylesheet" href="admin-dark.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;color:#1F2937}
+.sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:linear-gradient(180deg,#0F1F5C,#1E3578);color:#fff;display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-logo .icon{width:44px;height:44px;background:rgba(245,196,0,0.2);border:2px solid rgba(245,196,0,0.5);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;margin-bottom:8px}
+.sidebar-logo h2{font-size:16px;font-weight:700}
+.sidebar-logo p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px}
+.gold-line{height:3px;background:linear-gradient(90deg,#F5C400,#FFE54D)}
+nav{flex:1;padding:16px 0}
+nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;color:rgba(255,255,255,0.75);text-decoration:none;font-size:14px;font-weight:500;transition:all .2s;border-left:3px solid transparent}
+nav a:hover,nav a.active{background:rgba(255,255,255,0.1);color:#F5C400;border-left-color:#F5C400}
+.main{margin-left:240px;min-height:100vh}
+.topbar{background:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.topbar h1{font-size:18px;font-weight:700;color:#1E3578}
+.logout-btn{background:#fee2e2;color:#dc2626;border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.content{padding:28px}
+.filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+select,input{padding:9px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:13px;outline:none;background:#fff}
+select:focus,input:focus{border-color:#1E3578}
+.panel{background:#fff;border-radius:16px;border:1px solid #e5e7eb;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+table{width:100%;border-collapse:collapse}
+th{background:#f9fafb;padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase}
+td{padding:13px 16px;border-top:1px solid #f3f4f6;font-size:13px}
+tr:hover td{background:#f9fafb}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer}
+.badge.pending{background:#fef3c7;color:#d97706}
+.badge.under_review{background:#dbeafe;color:#1d4ed8}
+.badge.resolved{background:#d1fae5;color:#059669}
+.badge.rejected{background:#fee2e2;color:#dc2626}
+.anon{color:#9ca3af;font-style:italic}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:#fff;border-radius:20px;padding:30px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto}
+.modal-box h2{font-size:18px;font-weight:700;color:#1E3578;margin-bottom:20px}
+.detail-row{display:flex;gap:8px;margin-bottom:12px;font-size:14px}
+.detail-row label{font-weight:600;color:#374151;min-width:120px}
+.detail-row span{color:#6b7280}
+.complaint-text{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px;font-size:14px;color:#374151;line-height:1.6;margin:12px 0}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#374151}
+.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:13px;outline:none;font-family:inherit}
+.form-group select:focus,.form-group textarea:focus{border-color:#1E3578}
+.btn-row{display:flex;gap:10px;margin-top:20px;align-items:center}
+.btn{padding:10px 20px;border-radius:10px;border:none;font-size:14px;font-weight:600;cursor:pointer}
+.btn-primary{background:#1E3578;color:#fff}
+.btn-secondary{background:#f3f4f6;color:#374151}
+.empty{text-align:center;padding:50px;color:#9ca3af}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon">M</div>
+    <h2>MESOB Superadmin</h2>
+    <p>Sululta Branch</p>
+  </div>
+  <div class="gold-line"></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="about.html">ℹ️ About Us</a>
+    <a href="services-admin.html">🏛️ Services</a>
+    <a href="requirements-admin.html"> Requirements</a>
+    <a href="complaints.html" class="active">⚠️ Complaints</a>
+    <a href="faq-admin.html">❓ FAQ</a>
+    <a href="messages.html">✉️ Messages</a>
+    <a href="news-admin.html">📰 News</a>
+    <a href="contact-admin.html">📞 Contact Us</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="analytics.html">📈 Analytics</a>
+  </nav>
+</div>
+<div class="main">
+  <div class="topbar">
+    <h1 data-i18n="comp.title">⚠️ Complaints Management</h1>
+    <button class="logout-btn" onclick="logout()" data-i18n="btn.signout">Sign Out</button>
+  </div>
+  <div class="content">
+    <div class="filters">
+      <input type="search" id="searchInput" placeholder="Search by name or ref #..." data-i18n="comp.searchPH" data-i18n-attr="placeholder" oninput="load()" style="min-width:220px">
+      <select id="statusFilter" onchange="load()">
+        <option value="" data-i18n="comp.allStatus">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="under_review">Under Review</option>
+        <option value="resolved">Resolved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <select id="typeFilter" onchange="load()">
+        <option value="" data-i18n="comp.allTypes">All Types</option>
+        <option value="delay">Service Delay</option>
+        <option value="conduct">Staff Conduct</option>
+        <option value="corruption">Corruption</option>
+        <option value="missing">Missing Documents</option>
+        <option value="wrong">Wrong Information</option>
+        <option value="access">Accessibility</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="panel">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="comp.thRef">Ref #</th>
+            <th data-i18n="comp.thName">Name</th>
+            <th data-i18n="comp.thDept">Department</th>
+            <th data-i18n="comp.thType">Type</th>
+            <th data-i18n="comp.thStatus">Status</th>
+            <th data-i18n="comp.thDate">Date</th>
+            <th data-i18n="comp.thAction">Action</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2 data-i18n="comp.details">Complaint Details</h2>
+    <div id="modalContent"></div>
+    <div class="form-group">
+      <label data-i18n="comp.updateStatus">Update Status</label>
+      <select id="newStatus">
+        <option value="pending">Pending</option>
+        <option value="under_review">Under Review</option>
+        <option value="resolved">Resolved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label data-i18n="comp.response">Response to Complainant (Optional)</label>
+      <textarea id="response" rows="4" placeholder="Write your response..." data-i18n="comp.responsePH" data-i18n-attr="placeholder"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="updateComplaint()" data-i18n="btn.save">Save Changes</button>
+      <button class="btn btn-secondary" onclick="closeModal()" data-i18n="btn.close">Close</button>
+      <button class="btn" style="background:#fee2e2;color:#dc2626;margin-left:auto" onclick="deleteComplaint()" data-i18n="btn.delete">🗑 Delete</button>
+    </div>
+  </div>
+</div>
+<script src="complaints.js"></script>
+<script src="admin-prefs.js"></script>
+</body>
+</html>
+
+
+

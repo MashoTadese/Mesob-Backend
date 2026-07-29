@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("mesob_admin_theme")||"light")</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESOB Admin — Analytics</title>
+<link rel="stylesheet" href="admin-dark.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;color:#1F2937}
+.sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:linear-gradient(180deg,#0F1F5C,#1E3578);color:#fff;display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-logo .icon{width:44px;height:44px;background:rgba(245,196,0,0.2);border:2px solid rgba(245,196,0,0.5);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;margin-bottom:8px}
+.sidebar-logo h2{font-size:16px;font-weight:700}
+.sidebar-logo p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px}
+.gold-line{height:3px;background:linear-gradient(90deg,#F5C400,#FFE54D)}
+nav{flex:1;padding:16px 0}
+nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;color:rgba(255,255,255,0.75);text-decoration:none;font-size:14px;font-weight:500;transition:all .2s;border-left:3px solid transparent}
+nav a:hover,nav a.active{background:rgba(255,255,255,0.1);color:#F5C400;border-left-color:#F5C400}
+.main{margin-left:240px;min-height:100vh}
+.topbar{background:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.topbar h1{font-size:18px;font-weight:700;color:#1E3578}
+.logout-btn{background:#fee2e2;color:#dc2626;border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.content{padding:28px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.chart-card{background:#fff;border-radius:16px;border:1px solid #e5e7eb;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.chart-card h3{font-size:15px;font-weight:700;color:#1E3578;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #EEF1FB}
+.chart-card canvas{max-height:280px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:18px;text-align:center}
+.stat .val{font-size:28px;font-weight:800;color:#1E3578}
+.stat .lbl{font-size:12px;color:#6b7280;margin-top:4px}
+@media(max-width:768px){.charts-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon">M</div>
+    <h2>MESOB Superadmin</h2>
+    <p>Sululta Branch</p>
+  </div>
+  <div class="gold-line"></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="about.html">ℹ️ About Us</a>
+    <a href="services-admin.html">🏛️ Services</a>
+    <a href="requirements-admin.html"> Requirements</a>
+    <a href="complaints.html">⚠️ Complaints</a>
+    <a href="faq-admin.html">❓ FAQ</a>
+    <a href="messages.html">✉️ Messages</a>
+    <a href="news-admin.html">📰 News</a>
+    <a href="contact-admin.html">📞 Contact Us</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="analytics.html" class="active">📈 Analytics</a>
+  </nav>
+</div>
+<div class="main">
+  <div class="topbar">
+    <h1 data-i18n="anal.title">📈 Complaint Analytics</h1>
+    <button class="logout-btn" onclick="logout()" data-i18n="btn.signout">Sign Out</button>
+  </div>
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat"><div class="val" id="sTotal">—</div><div class="lbl" data-i18n="anal.total">Total Complaints</div></div>
+      <div class="stat"><div class="val" id="sPending" style="color:#d97706">—</div><div class="lbl" data-i18n="anal.pending">Pending</div></div>
+      <div class="stat"><div class="val" id="sResolved" style="color:#059669">—</div><div class="lbl" data-i18n="anal.resolved">Resolved</div></div>
+      <div class="stat"><div class="val" id="sReview" style="color:#1d4ed8">—</div><div class="lbl" data-i18n="anal.underReview">Under Review</div></div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card"><h3 data-i18n="anal.byType">By Complaint Type</h3><canvas id="typeChart"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="anal.byStatus">By Status</h3><canvas id="statusChart"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="anal.monthly">Monthly Trend (Last 6 Months)</h3><canvas id="monthChart"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="anal.byDept">By Department / Window</h3><canvas id="deptChart"></canvas></div>
+    </div>
+  </div>
+</div>
+<script src="analytics.js"></script>
+<script src="admin-prefs.js"></script>
+</body>
+</html>
+
+
+

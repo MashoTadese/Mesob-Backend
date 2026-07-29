@@ -1,0 +1,272 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("mesob_admin_theme")||"light")</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESOB Superadmin — News</title>
+<link rel="stylesheet" href="admin-dark.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fc; color: #111827; }
+
+/* Sidebar */
+.sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; background: #0f1f5c; display: flex; flex-direction: column; z-index: 100; }
+.sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.brand-icon { width: 38px; height: 38px; background: #f5c400; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: #0f1f5c; margin-bottom: 10px; }
+.brand-name { font-size: 15px; font-weight: 700; color: #fff; }
+.brand-sub  { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.gold-bar   { height: 2px; background: linear-gradient(90deg,#f5c400,#ffe066); }
+nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+nav a { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(255,255,255,.6); text-decoration: none; font-size: 13.5px; font-weight: 500; border-left: 2px solid transparent; transition: all .18s; }
+nav a:hover { color: #fff; background: rgba(255,255,255,.06); }
+nav a.active { color: #f5c400; background: rgba(245,196,0,.1); border-left-color: #f5c400; font-weight: 600; }
+
+/* Main */
+.main { margin-left: 240px; min-height: 100vh; }
+.topbar { background: #fff; padding: 18px 32px; border-bottom: 1px solid #e9ecf0; display: flex; align-items: center; justify-content: space-between; }
+.topbar-title { font-size: 17px; font-weight: 700; color: #0f1f5c; }
+.topbar-sub   { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+.signout-btn { background: none; border: 1px solid #e5e7eb; color: #6b7280; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; }
+.signout-btn:hover { border-color: #dc2626; color: #dc2626; }
+.content { padding: 28px; }
+
+/* Layout: left=list, right=form */
+.news-layout { display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start; }
+
+/* News list */
+.news-card { background: #fff; border: 1px solid #e9ecf0; border-radius: 14px; overflow: hidden; }
+.news-card-head { padding: 16px 20px; border-bottom: 1px solid #e9ecf0; display: flex; align-items: center; justify-content: space-between; }
+.news-card-head h2 { font-size: 15px; font-weight: 700; color: #0f1f5c; }
+.news-item { padding: 16px 20px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 14px; align-items: flex-start; transition: background .15s; }
+.news-item:last-child { border-bottom: none; }
+.news-item:hover { background: #fafbff; }
+.news-thumb { width: 72px; height: 52px; border-radius: 8px; object-fit: cover; background: #e9ecf0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.news-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+.news-info { flex: 1; min-width: 0; }
+.news-info .ni-title { font-size: 14px; font-weight: 600; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.news-info .ni-meta  { font-size: 11px; color: #9ca3af; display: flex; align-items: center; gap: 8px; }
+.type-badge { padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+.type-text  { background: #f0f4ff; color: #0f1f5c; }
+.type-image { background: #f0fdf4; color: #059669; }
+.type-video { background: #fff7ed; color: #c2410c; }
+.pub-badge  { padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+.pub-yes    { background: #d1fae5; color: #059669; }
+.pub-no     { background: #f3f4f6; color: #6b7280; }
+.news-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-icon { border: none; padding: 6px 10px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
+.btn-edit    { background: #f0f4ff; color: #0f1f5c; }
+.btn-pub     { background: #d1fae5; color: #059669; }
+.btn-unpub   { background: #fef3c7; color: #d97706; }
+.btn-del     { background: #fef2f2; color: #dc2626; }
+.empty-news  { padding: 60px 20px; text-align: center; color: #9ca3af; font-size: 14px; }
+
+/* Form panel */
+.form-panel { background: #fff; border: 1px solid #e9ecf0; border-radius: 14px; overflow: hidden; position: sticky; top: 20px; }
+.form-panel-head { padding: 16px 20px; border-bottom: 1px solid #e9ecf0; background: linear-gradient(135deg,#0f1f5c,#1e3578); }
+.form-panel-head h2 { font-size: 15px; font-weight: 700; color: #fff; }
+.form-panel-head p  { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 2px; }
+.form-body { padding: 20px; max-height: calc(100vh - 200px); overflow-y: auto; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 10px 13px; border: 1px solid #e5e7eb; border-radius: 9px;
+  font-size: 13px; outline: none; font-family: inherit; transition: border .18s;
+  background: #fff; color: #111827;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #0f1f5c; }
+.form-group textarea { resize: vertical; }
+
+.type-selector { display: flex; gap: 8px; margin-bottom: 16px; }
+.type-btn { flex: 1; padding: 10px; border: 1.5px solid #e5e7eb; border-radius: 9px; background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; text-align: center; color: #6b7280; }
+.type-btn.active { border-color: #0f1f5c; background: #f0f4ff; color: #0f1f5c; }
+
+.media-section { display: none; }
+.media-section.show { display: block; }
+
+.img-preview { width: 100%; height: 140px; border-radius: 9px; border: 2px dashed #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #9ca3af; cursor: pointer; overflow: hidden; margin-bottom: 8px; transition: border .18s; }
+.img-preview:hover { border-color: #0f1f5c; }
+.img-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+.publish-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-top: 1px solid #f3f4f6; margin-top: 8px; }
+.publish-label { font-size: 13px; font-weight: 600; color: #111827; }
+.publish-sub   { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+.toggle-wrap label { position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; }
+.toggle-wrap input { opacity: 0; width: 0; height: 0; }
+.toggle-track { position: absolute; inset: 0; background: #e5e7eb; border-radius: 24px; transition: .3s; }
+.toggle-wrap input:checked + .toggle-track { background: #059669; }
+.toggle-thumb { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: .3s; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.toggle-wrap input:checked ~ .toggle-thumb { transform: translateX(20px); }
+
+.save-btn { width: 100%; padding: 12px; background: #0f1f5c; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s; margin-top: 16px; }
+.save-btn:hover { background: #1a3072; }
+.cancel-btn { width: 100%; padding: 10px; background: #f3f4f6; color: #374151; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+
+.alert { padding: 12px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; margin-bottom: 14px; display: none; }
+.alert.success { background: #f0fdf4; color: #059669; border: 1px solid #a7f3d0; }
+.alert.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+.lang-tabs { display: flex; gap: 4px; margin-bottom: 4px; }
+.lang-tab { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid #e5e7eb; background: #fff; color: #6b7280; }
+.lang-tab.active { background: #0f1f5c; color: #fff; border-color: #0f1f5c; }
+.lang-field { display: none; }
+.lang-field.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">M</div>
+    <div class="brand-name">MESOB Superadmin</div>
+    <div class="brand-sub">Sululta Branch</div>
+  </div>
+  <div class="gold-bar"></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="about.html">ℹ️ About Us</a>
+    <a href="services-admin.html">🏛️ Services</a>
+    <a href="requirements-admin.html"> Requirements</a>
+    <a href="complaints.html">⚠️ Complaints</a>
+    <a href="faq-admin.html">❓ FAQ</a>
+    <a href="messages.html">✉️ Messages</a>
+    <a href="news-admin.html" class="active">📰 News</a>
+    <a href="contact-admin.html">📞 Contact Us</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="analytics.html">📈 Analytics</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">📰 News Management</div>
+      <div class="topbar-sub">Post daily news — text, image, or YouTube video</div>
+    </div>
+    <button class="signout-btn" onclick="logout()">Sign out</button>
+  </div>
+
+  <div class="content">
+    <div class="news-layout">
+
+      <!-- LEFT: News list -->
+      <div class="news-card">
+        <div class="news-card-head">
+          <h2 id="listTitle">All News Posts</h2>
+          <button onclick="resetForm()" style="background:#0f1f5c;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">+ New Post</button>
+        </div>
+        <div id="newsList"><div class="empty-news">⏳ Loading...</div></div>
+      </div>
+
+      <!-- RIGHT: Create/Edit form -->
+      <div class="form-panel">
+        <div class="form-panel-head">
+          <h2 id="formTitle">✏️ New Post</h2>
+          <p id="formSub">Fill in the details and publish</p>
+        </div>
+        <div class="form-body">
+          <div class="alert" id="formAlert"></div>
+
+          <!-- EN Title — always visible, required -->
+          <div class="form-group">
+            <label>Title (English) <span style="color:#dc2626">*</span></label>
+            <input type="text" id="titleEN" placeholder="Title in English — required">
+          </div>
+          <div class="form-group">
+            <label>Title (አማርኛ)</label>
+            <input type="text" id="titleAM" placeholder="ርዕስ በአማርኛ — ፋካልቴቲቭ">
+          </div>
+          <div class="form-group">
+            <label>Title (Afaan Oromo)</label>
+            <input type="text" id="titleOR" placeholder="Mata duree Afaan Oromoo — dirqama miti">
+          </div>
+
+          <!-- Type selector -->
+          <div class="form-group">
+            <label>Post Type</label>
+            <div class="type-selector">
+              <button type="button" class="type-btn active" data-type="text"  onclick="setType('text')">📝 Text</button>
+              <button type="button" class="type-btn"        data-type="image" onclick="setType('image')">🖼️ Image</button>
+              <button type="button" class="type-btn"        data-type="video" onclick="setType('video')">▶️ Video</button>
+            </div>
+          </div>
+
+          <!-- Body English — always visible -->
+          <div class="form-group">
+            <label>Body / Description (English)</label>
+            <textarea id="bodyEN" rows="3" placeholder="News content in English..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Body (አማርኛ)</label>
+            <textarea id="bodyAM" rows="2" placeholder="ዜናውን በአማርኛ ይጻፉ..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Body (Afaan Oromo)</label>
+            <textarea id="bodyOR" rows="2" placeholder="Oduu Afaan Oromootti barreessi..."></textarea>
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label>Category</label>
+            <select id="category">
+              <option value="General">General</option>
+              <option value="Announcement">Announcement</option>
+              <option value="Event">Event</option>
+              <option value="Services">Services</option>
+              <option value="Community">Community</option>
+            </select>
+          </div>
+
+          <!-- Image upload -->
+          <div class="media-section" id="imageSection">
+            <div class="form-group">
+              <label>Upload Image</label>
+              <div class="img-preview" id="imgPreview" onclick="document.getElementById('imageInput').click()">📷</div>
+              <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="previewImage(this)">
+              <div style="font-size:11px;color:#9ca3af">Click to upload — JPG, PNG, GIF (max 10MB)</div>
+            </div>
+          </div>
+
+          <!-- YouTube URL -->
+          <div class="media-section" id="videoSection">
+            <div class="form-group">
+              <label>YouTube Video URL</label>
+              <input type="text" id="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+              <div style="font-size:11px;color:#9ca3af;margin-top:4px">Paste any YouTube link</div>
+            </div>
+            <div id="videoPreview" style="display:none;margin-bottom:16px;border-radius:9px;overflow:hidden">
+              <iframe id="videoFrame" width="100%" height="180" frameborder="0" allowfullscreen style="display:block"></iframe>
+            </div>
+          </div>
+
+          <!-- Publish toggle -->
+          <div class="publish-row">
+            <div>
+              <div class="publish-label">Publish Now</div>
+              <div class="publish-sub">Visible to public immediately</div>
+            </div>
+            <div class="toggle-wrap">
+              <label>
+                <input type="checkbox" id="isPublished">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+          </div>
+
+          <button class="save-btn" onclick="savePost()">💾 Save Post</button>
+          <button class="cancel-btn" onclick="resetForm()">Cancel</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="news-admin.js"></script>
+<script src="admin-prefs.js"></script>
+</body>
+</html>
+

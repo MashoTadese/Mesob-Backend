@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("mesob_admin_theme")||"light")</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESOB Superadmin — Service Requirements</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fc; color: #111827; }
+
+.sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; background: #0f1f5c; display: flex; flex-direction: column; z-index: 100; }
+.sidebar-brand { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.brand-icon { width: 38px; height: 38px; background: #f5c400; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: #0f1f5c; margin-bottom: 10px; }
+.brand-name { font-size: 15px; font-weight: 700; color: #fff; }
+.brand-sub  { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.gold-bar   { height: 2px; background: linear-gradient(90deg,#f5c400,#ffe066); }
+nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+nav a { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(255,255,255,.6); text-decoration: none; font-size: 13.5px; font-weight: 500; border-left: 2px solid transparent; transition: all .18s; }
+nav a:hover { color: #fff; background: rgba(255,255,255,.06); }
+nav a.active { color: #f5c400; background: rgba(245,196,0,.1); border-left-color: #f5c400; font-weight: 600; }
+
+.main { margin-left: 240px; min-height: 100vh; }
+.topbar { background: #fff; padding: 18px 32px; border-bottom: 1px solid #e9ecf0; display: flex; align-items: center; justify-content: space-between; }
+.topbar-title { font-size: 17px; font-weight: 700; color: #0f1f5c; }
+.topbar-sub   { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+.signout-btn { background: none; border: 1px solid #e5e7eb; color: #6b7280; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.signout-btn:hover { border-color: #dc2626; color: #dc2626; }
+
+.content { padding: 32px; }
+.alert { padding: 13px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; display: none; margin-bottom: 20px; }
+.alert.success { background: #f0fdf4; color: #059669; border: 1px solid #a7f3d0; }
+.alert.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+/* Toolbar */
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.toolbar input { flex: 1; padding: 10px 16px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; outline: none; }
+.toolbar input:focus { border-color: #0f1f5c; }
+.toolbar .total { font-size: 12px; color: #9ca3af; white-space: nowrap; }
+.btn-new { background: #f5c400; color: #0f1f5c; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.btn-new:hover { background: #e6b800; }
+
+/* List */
+.req-row { background: #fff; border: 1px solid #e9ecf0; border-radius: 12px; padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; transition: all .15s; }
+.req-row:hover { border-color: #0f1f5c; box-shadow: 0 2px 8px rgba(15,31,92,.08); }
+.req-info { flex: 1; }
+.req-name { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 6px; }
+.req-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.meta-badge { font-size: 11px; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 20px; }
+.req-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.btn-sm { padding: 5px 12px; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; }
+.btn-edit { background: #f0f4ff; color: #0f1f5c; }
+.btn-edit:hover { background: #0f1f5c; color: #fff; }
+.btn-del  { background: #fef2f2; color: #dc2626; }
+.btn-del:hover  { background: #dc2626; color: #fff; }
+.empty-msg { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; border: 2px dashed #e9ecf0; border-radius: 12px; }
+
+/* Window groups */
+.win-group { margin-bottom: 28px; }
+.win-group-header {
+  font-size: 13px; font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, #0f1f5c, #1e3578);
+  padding: 10px 18px; border-radius: 10px 10px 0 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.win-group-count {
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 20px;
+}
+.win-group .req-row { border-radius: 0; border-top: none; }
+.win-group .req-row:first-of-type { border-top: 1px solid #e9ecf0; }
+.win-group .req-row:last-child { border-radius: 0 0 10px 10px; }
+
+/* Editor */
+#editorView { display: none; }
+.editor-card { background: #fff; border: 1px solid #e9ecf0; border-radius: 16px; overflow: hidden; }
+.editor-head { background: linear-gradient(135deg, #0f1f5c, #1e3578); padding: 22px 28px; }
+.editor-head h2 { font-size: 16px; font-weight: 700; color: #fff; }
+.editor-head p  { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 3px; }
+.editor-body { padding: 28px; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+.form-group input, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; outline: none; font-family: inherit; resize: vertical; background: #fff; color: #111827; }
+.form-group input:focus, .form-group textarea:focus { border-color: #0f1f5c; box-shadow: 0 0 0 3px rgba(15,31,92,.08); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-hint { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+.form-actions { display: flex; gap: 10px; padding-top: 20px; border-top: 1px solid #f1f3f8; margin-top: 20px; }
+.btn-primary { background: #0f1f5c; color: #fff; padding: 11px 26px; border-radius: 10px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+.btn-primary:hover { background: #1a3072; }
+.btn-ghost { background: #f3f4f6; color: #374151; padding: 11px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+.btn-ghost:hover { background: #e5e7eb; }
+
+/* Language tabs */
+.lang-tab {
+  padding: 8px 18px; border: none; background: none;
+  font-size: 13px; font-weight: 600; color: #9ca3af;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: all .15s;
+}
+.lang-tab:hover { color: #0f1f5c; }
+.lang-tab.active { color: #0f1f5c; border-bottom-color: #0f1f5c; }
+</style>
+<link rel="stylesheet" href="admin-dark.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">M</div>
+    <div class="brand-name">MESOB Superadmin</div>
+    <div class="brand-sub">Sululta Branch</div>
+  </div>
+  <div class="gold-bar"></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="about.html">ℹ️ About Us</a>
+    <a href="services-admin.html">🏛️ Services</a>
+    <a href="requirements-admin.html" class="active">📋 Requirements</a>
+    <a href="complaints.html">⚠️ Complaints</a>
+    <a href="faq-admin.html">❓ FAQ</a>
+    <a href="messages.html">✉️ Messages</a>
+    <a href="news-admin.html">📰 News</a>
+    <a href="contact-admin.html">📞 Contact Us</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="analytics.html">📈 Analytics</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">📋 Service Requirements</div>
+      <div class="topbar-sub">Manage required documents, processing time, fee and steps for each service</div>
+    </div>
+    <button class="signout-btn" onclick="logout()">Sign Out</button>
+  </div>
+
+  <div class="content">
+
+    <!-- LIST VIEW -->
+    <div id="listView">
+      <div class="alert" id="listAlert"></div>
+      <div class="toolbar">
+        <input type="search" id="searchInput" placeholder="🔍 Search by service name or window...">
+        <span class="total" id="totalCount">Loading...</span>
+        <button class="btn-new" onclick="openEditor(null)">+ Add Requirement</button>
+      </div>
+      <div id="reqList"><p class="empty-msg">Loading...</p></div>
+    </div>
+
+    <!-- EDITOR VIEW -->
+    <div id="editorView">
+      <div class="editor-card">
+        <div class="editor-head">
+          <h2 id="editorTitle">Add New Requirement</h2>
+          <p>Fill in all fields — changes are saved to the database immediately</p>
+        </div>
+        <div class="editor-body">
+          <div class="alert" id="editorAlert"></div>
+          <form id="reqForm">
+            <div class="form-group">
+              <label>Service Name (English) *</label>
+              <input type="text" id="reqServiceName" placeholder="e.g. Resident ID Issuance" required>
+              <p class="form-hint">Must match the English service name shown on the public site</p>
+            </div>
+            <div class="form-grid">
+              <div class="form-group" style="grid-column:1/-1">
+                <label>Window</label>
+                <select id="reqWindow" style="width:100%;padding:10px 14px;border:1px solid #e5e7eb;border-radius:10px;font-size:14px;outline:none;font-family:inherit;color:#111827;background:#fff;">
+                  <option value="">— Select Window —</option>
+                  <option value="Window 1 — Fooddaa 1ffaa">Window 1 — Basic Document Services</option>
+                  <option value="Window 2 — Fooddaa 2ffaa">Window 2 — Support Letters &amp; Insurance</option>
+                  <option value="Window 3 — Fooddaa 3ffaa">Window 3 — Complaints &amp; Petitions</option>
+                  <option value="Window 4 — Fooddaa 4ffaa">Window 4 — Education &amp; Construction</option>
+                  <option value="Window 5 — Fooddaa 5ffaa">Window 5 — Professional Competence</option>
+                  <option value="Window 6 — Fooddaa 6ffaa">Window 6 — Trade License &amp; Transport</option>
+                  <option value="Window 7 — Fooddaa 7ffaa">Window 7 — Civil Documents &amp; Agreements</option>
+                  <option value="Window 8 — Fooddaa 8ffaa">Window 8 — Investment Services</option>
+                  <option value="Window 9 — Fooddaa 9ffaa">Window 9 — Land &amp; Property Services</option>
+                  <option value="Window 10 — Fooddaa 10ffaa">Window 10 — Revenue &amp; Tax Collection</option>
+                  <option value="Window 11 — Fooddaa 11ffaa">Window 11 — Payment &amp; Special Services</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Language tabs -->
+            <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid #e9ecf0;padding-bottom:0">
+              <button type="button" class="lang-tab active" data-lang="EN" onclick="switchLangTab('EN')">🇬🇧 English</button>
+              <button type="button" class="lang-tab" data-lang="AM" onclick="switchLangTab('AM')">🇪🇹 አማርኛ</button>
+              <button type="button" class="lang-tab" data-lang="OR" onclick="switchLangTab('OR')">🌿 Afaan Oromo</button>
+            </div>
+
+            <!-- English fields -->
+            <div class="lang-panel" id="panel-EN">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Processing Time (English)</label>
+                  <input type="text" id="reqTimeEN" placeholder="e.g. 1–3 business days">
+                </div>
+                <div class="form-group">
+                  <label>Service Fee (English)</label>
+                  <input type="text" id="reqFeeEN" placeholder="e.g. Free  or  License fee applies">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Required Documents — English (one per line)</label>
+                <textarea id="reqDocsEN" rows="5" placeholder="Kebele ID card (original)&#10;2 passport-size photographs&#10;Proof of residence"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Steps to Follow — English (one per line)</label>
+                <textarea id="reqStepsEN" rows="4" placeholder="Submit application at Window 1&#10;Document verification&#10;Collection"></textarea>
+              </div>
+            </div>
+
+            <!-- Amharic fields -->
+            <div class="lang-panel" id="panel-AM" style="display:none">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Processing Time (አማርኛ)</label>
+                  <input type="text" id="reqTimeAM" placeholder="e.g. 1–3 የሥራ ቀናት">
+                </div>
+                <div class="form-group">
+                  <label>Service Fee (አማርኛ)</label>
+                  <input type="text" id="reqFeeAM" placeholder="e.g. ነፃ">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Required Documents — አማርኛ (one per line)</label>
+                <textarea id="reqDocsAM" rows="5" placeholder="(Optional — leave blank to use English)"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Steps to Follow — አማርኛ (one per line)</label>
+                <textarea id="reqStepsAM" rows="4" placeholder="(Optional — leave blank to use English)"></textarea>
+              </div>
+            </div>
+
+            <!-- Afaan Oromo fields -->
+            <div class="lang-panel" id="panel-OR" style="display:none">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Processing Time (Afaan Oromo)</label>
+                  <input type="text" id="reqTimeOR" placeholder="e.g. Guyyoota hojii 1–3">
+                </div>
+                <div class="form-group">
+                  <label>Service Fee (Afaan Oromo)</label>
+                  <input type="text" id="reqFeeOR" placeholder="e.g. Kaffaltii hin barbaachisu">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Required Documents — Afaan Oromo (one per line)</label>
+                <textarea id="reqDocsOR" rows="5" placeholder="(Dirqama miti — yoo duwwaa ta'e Afaan Ingilizii fayyadama)"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Steps to Follow — Afaan Oromo (one per line)</label>
+                <textarea id="reqStepsOR" rows="4" placeholder="(Dirqama miti — yoo duwwaa ta'e Afaan Ingilizii fayyadama)"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">💾 Save</button>
+              <button type="button" class="btn-ghost" onclick="closeEditor()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="requirements-admin.js"></script>
+<script src="admin-prefs.js"></script>
+</body>
+</html>

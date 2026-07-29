@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("mesob_admin_theme")||"light")</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESOB Superadmin — FAQ</title>
+<link rel="stylesheet" href="admin-dark.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;color:#1F2937}
+.sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:linear-gradient(180deg,#0F1F5C,#1E3578);color:#fff;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sidebar-logo{padding:20px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-logo .icon{width:44px;height:44px;background:rgba(245,196,0,0.2);border:2px solid rgba(245,196,0,0.5);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;margin-bottom:8px}
+.sidebar-logo h2{font-size:15px;font-weight:700}
+.sidebar-logo p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px}
+.gold-line{height:3px;background:linear-gradient(90deg,#F5C400,#FFE54D)}
+nav{flex:1;padding:12px 0}
+nav a{display:flex;align-items:center;gap:10px;padding:10px 20px;color:rgba(255,255,255,0.75);text-decoration:none;font-size:13px;font-weight:500;transition:all .2s;border-left:3px solid transparent}
+nav a:hover,nav a.active{background:rgba(255,255,255,0.1);color:#F5C400;border-left-color:#F5C400}
+.main{margin-left:240px;min-height:100vh}
+.topbar{background:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.topbar h1{font-size:18px;font-weight:700;color:#1E3578}
+.logout-btn{background:#fee2e2;color:#dc2626;border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.content{padding:28px;max-width:900px}
+.card{background:#fff;border-radius:16px;border:1px solid #e5e7eb;padding:28px;margin-bottom:24px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.card h2{font-size:16px;font-weight:700;color:#1E3578;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #EEF1FB}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.form-group input,.form-group textarea{width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;font-family:inherit;resize:vertical}
+.form-group input:focus,.form-group textarea:focus{border-color:#1E3578}
+.btn{padding:10px 22px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer}
+.btn-primary{background:#1E3578;color:#fff}
+.alert{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:16px;display:none}
+.alert.success{background:#d1fae5;color:#059669;border:1px solid #a7f3d0}
+.alert.error{background:#fee2e2;color:#dc2626;border:1px solid #fecaca}
+.faq-list{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.faq-item{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px 18px;display:flex;align-items:start;justify-content:space-between;gap:12px}
+.faq-item .faq-content{flex:1}
+.faq-item .faq-q{font-weight:700;font-size:14px;color:#1F2937;margin-bottom:6px}
+.faq-item .faq-a{font-size:13px;color:#6b7280;line-height:1.6}
+.faq-item .del-btn{background:#fee2e2;color:#dc2626;border:none;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;flex-shrink:0}
+.empty{color:#9ca3af;font-size:13px;padding:16px 0}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon">M</div>
+    <h2>MESOB Superadmin</h2>
+    <p>Sululta Branch</p>
+  </div>
+  <div class="gold-line"></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="about.html">ℹ️ About Us</a>
+    <a href="services-admin.html">🏛️ Services</a>
+    <a href="requirements-admin.html"> Requirements</a>
+    <a href="complaints.html">⚠️ Complaints</a>
+    <a href="faq-admin.html" class="active">❓ FAQ</a>
+    <a href="messages.html">✉️ Messages</a>
+    <a href="news-admin.html">📰 News</a>
+    <a href="contact-admin.html">📞 Contact Us</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="analytics.html">📈 Analytics</a>
+  </nav>
+</div>
+<div class="main">
+  <div class="topbar">
+    <h1 data-i18n="faq.title">❓ FAQ Management</h1>
+    <button class="logout-btn" onclick="logout()" data-i18n="btn.signout">Sign Out</button>
+  </div>
+  <div class="content">
+    <div class="card">
+      <h2 data-i18n="faq.addCard">➕ Add New FAQ</h2>
+      <div class="alert" id="addAlert"></div>
+      <form id="faqForm">
+        <div class="form-group"><label data-i18n="faq.question">Question *</label><input type="text" id="faqQuestion" placeholder="e.g. What documents do I need?" data-i18n="faq.questionPH" data-i18n-attr="placeholder" required></div>
+        <div class="form-group"><label data-i18n="faq.answer">Answer *</label><textarea id="faqAnswer" rows="4" required></textarea></div>
+        <button type="submit" class="btn btn-primary" data-i18n="btn.addFaq">➕ Add FAQ</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2 data-i18n="faq.listCard">📋 Existing FAQs</h2>
+      <div class="alert" id="listAlert"></div>
+      <div class="faq-list" id="faqList"><p class="empty">Loading FAQs...</p></div>
+    </div>
+  </div>
+</div>
+<script src="faq-admin.js"></script>
+<script src="admin-prefs.js"></script>
+</body>
+</html>
+
+
+

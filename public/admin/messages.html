@@ -1,0 +1,461 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>document.documentElement.setAttribute("data-theme",localStorage.getItem("mesob_admin_theme")||"light")</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESOB Admin — Messages</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f8f9fc;
+  color: #111827;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: 240px; height: 100vh;
+  background: linear-gradient(180deg, #0F1F5C, #1E3578);
+  display: flex; flex-direction: column;
+  z-index: 100;
+}
+.sidebar-brand {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.brand-icon {
+  width: 44px; height: 44px;
+  background: rgba(245,196,0,0.2);
+  border: 2px solid rgba(245,196,0,0.5);
+  border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: bold; font-size: 20px; margin-bottom: 8px;
+}
+.brand-name { font-size: 16px; font-weight: 700; color: #fff; }
+.brand-sub  { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+.gold-bar   { height: 3px; background: linear-gradient(90deg, #F5C400, #FFE54D); }
+nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+nav a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px; color: rgba(255,255,255,.75);
+  text-decoration: none; font-size: 14px; font-weight: 500;
+  border-left: 3px solid transparent; transition: all .2s;
+}
+nav a:hover, nav a.active { background: rgba(255,255,255,.1); color: #F5C400; border-left-color: #F5C400; }
+
+/* ── Main ── */
+.main { margin-left: 240px; min-height: 100vh; }
+
+.topbar {
+  background: #fff;
+  padding: 16px 28px;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-title { font-size: 18px; font-weight: 700; color: #1E3578; }
+.topbar-sub   { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+.signout-btn {
+  background: #fee2e2; color: #dc2626;
+  border: none; padding: 7px 14px;
+  border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: pointer;
+}
+.signout-btn:hover { background: #fecaca; }
+
+.content { padding: 28px; }
+
+/* ── Summary Strip ── */
+.summary {
+  display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.sum-card {
+  background: #fff;
+  border: 1px solid #e9ecf0;
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex; align-items: center; gap: 14px;
+  flex: 1; min-width: 160px;
+}
+.sum-card .s-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.sum-card.total  .s-icon { background: #f0f4ff; }
+.sum-card.contact .s-icon { background: #eff6ff; }
+.sum-card.cmp    .s-icon { background: #fff7ed; }
+.sum-card .s-num  { font-size: 24px; font-weight: 800; color: #0f1f5c; line-height: 1; }
+.sum-card .s-lbl  { font-size: 11px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; margin-top: 3px; }
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
+}
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; background: #f1f3f8; padding: 4px; border-radius: 10px; }
+.tab {
+  padding: 8px 20px;
+  border: none; background: transparent;
+  font-size: 13px; font-weight: 600; color: #6b7280;
+  border-radius: 8px; cursor: pointer; transition: all .18s;
+  display: flex; align-items: center; gap: 6px;
+}
+.tab.active { background: #fff; color: #0f1f5c; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+.tab .pill {
+  background: #e9ecf0; color: #6b7280;
+  border-radius: 20px; font-size: 10px; font-weight: 700;
+  padding: 1px 7px;
+}
+.tab.active .pill { background: #0f1f5c; color: #fff; }
+
+/* Right controls */
+.controls { display: flex; gap: 8px; }
+.search-wrap { position: relative; }
+.search-wrap input {
+  padding: 9px 14px 9px 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  width: 240px;
+  transition: border .18s;
+}
+.search-wrap input:focus { border-color: #0f1f5c; }
+.search-wrap .s-ic {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: #9ca3af; font-size: 14px; pointer-events: none;
+}
+.filter-sel {
+  padding: 9px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+
+/* ── Table ── */
+.table-wrap {
+  background: #fff;
+  border: 1px solid #e9ecf0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+thead { background: #f9fafb; }
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  border-bottom: 1px solid #e5e7eb;
+}
+td {
+  padding: 13px 16px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 13px;
+  color: #374151;
+  vertical-align: middle;
+}
+tr:last-child td { border-top: 1px solid #f3f4f6; }
+tr:hover td { background: #f9fafb; }
+tr.unread td { background: #fffdf0; }
+tr.unread td:first-child { border-left: 3px solid #f5c400; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+  white-space: nowrap;
+}
+.b-contact   { background: #eff6ff; color: #2563eb; }
+.b-complaint { background: #fff7ed; color: #c2410c; }
+.b-new       { background: #fef2f2; color: #dc2626; }
+.b-read      { background: #f3f4f6; color: #6b7280; }
+.b-replied   { background: #f0fdf4; color: #16a34a; }
+
+/* Unread dot */
+.dot { width: 7px; height: 7px; background: #ef4444; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+/* Avatar */
+.avatar {
+  width: 32px; height: 32px;
+  background: #0f1f5c;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #f5c400;
+  flex-shrink: 0; margin-right: 8px;
+}
+
+/* Action buttons */
+.row-actions { display: flex; gap: 6px; }
+.btn-sm {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all .15s;
+}
+.btn-view  { border-color: #dde3f0; background: #f5f7ff; color: #0f1f5c; }
+.btn-reply { border-color: #d1fae5; background: #f0fdf4; color: #059669; }
+.btn-del   { border-color: #fee2e2; background: #fff5f5; color: #dc2626; }
+.btn-sm:hover { filter: brightness(.94); }
+
+/* ── Modals ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(15,31,92,.45);
+  z-index: 300;
+  align-items: center; justify-content: center;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: #fff;
+  border-radius: 18px;
+  padding: 32px;
+  width: 94%; max-width: 600px;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+.modal-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px; padding-bottom: 18px;
+  border-bottom: 2px solid #f1f3f8;
+}
+.modal-head h2 { font-size: 18px; font-weight: 700; color: #0f1f5c; }
+.modal-head .src-badge { font-size: 12px; margin-top: 4px; }
+.close-btn {
+  width: 32px; height: 32px; border: none;
+  background: #f1f3f8; border-radius: 8px;
+  font-size: 16px; cursor: pointer; color: #6b7280;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.close-btn:hover { background: #e5e7eb; }
+
+.meta-grid {
+  display: grid; grid-template-columns: 100px 1fr; gap: 10px 12px;
+  background: #f8f9fc; border-radius: 12px; padding: 18px;
+  margin-bottom: 18px;
+}
+.m-lbl { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .4px; padding-top: 2px; }
+.m-val { font-size: 13px; font-weight: 600; color: #111827; }
+.m-val a { color: #2563eb; text-decoration: none; }
+
+.msg-body {
+  background: #f8f9fc;
+  border-left: 3px solid #0f1f5c;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 18px;
+  font-size: 14px; line-height: 1.75;
+  color: #374151;
+  margin: 14px 0;
+}
+.reply-body {
+  background: #f0fdf4;
+  border-left: 3px solid #16a34a;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 18px;
+  font-size: 13px; line-height: 1.7;
+  color: #065f46;
+  margin: 10px 0;
+}
+.sec-title { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .5px; margin: 18px 0 8px; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.btn {
+  padding: 10px 22px; border-radius: 9px; border: none;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all .15s;
+}
+.btn-primary { background: #0f1f5c; color: #fff; }
+.btn-primary:hover { background: #1a3072; }
+.btn-success { background: #059669; color: #fff; }
+.btn-success:hover { background: #047857; }
+.btn-danger  { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.btn-danger:hover  { background: #fee2e2; }
+.btn-ghost   { background: #f3f4f6; color: #374151; }
+.btn-ghost:hover   { background: #e5e7eb; }
+
+/* Reply Form */
+.reply-to-info {
+  background: #f0f4ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px; line-height: 1.7;
+  color: #374151; margin-bottom: 14px;
+}
+.reply-to-info strong { color: #0f1f5c; }
+textarea {
+  width: 100%; padding: 14px 16px;
+  border: 1px solid #e5e7eb; border-radius: 10px;
+  font-size: 14px; font-family: inherit;
+  line-height: 1.7; resize: vertical; outline: none;
+  transition: border .18s;
+}
+textarea:focus { border-color: #0f1f5c; }
+.err-msg {
+  background: #fef2f2; color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 12px; font-weight: 600;
+  margin-bottom: 10px; display: none;
+}
+
+/* Empty */
+.empty { padding: 70px 20px; text-align: center; color: #9ca3af; }
+.empty .e-icon { font-size: 44px; margin-bottom: 12px; }
+.empty p { font-size: 14px; font-weight: 500; }
+</style>
+
+<link rel="stylesheet" href="admin-dark.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">M</div>
+    <div class="brand-name">MESOB Superadmin</div>
+    <div class="brand-sub">Sululta Branch</div>
+  </div>
+  <div class="gold-bar"></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="about.html">ℹ️ About Us</a>
+    <a href="services-admin.html">🏛️ Services</a>
+    <a href="requirements-admin.html"> Requirements</a>
+    <a href="complaints.html">⚠️ Complaints</a>
+    <a href="faq-admin.html">❓ FAQ</a>
+    <a href="messages.html" class="active">✉️ Messages</a>
+    <a href="news-admin.html">📰 News</a>
+    <a href="contact-admin.html">📞 Contact Us</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="analytics.html">📈 Analytics</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" data-i18n="msg.title">✉️ Messages &amp; Complaints</div>
+      <div class="topbar-sub" data-i18n="msg.subtitle">All customer communications in one place</div>
+    </div>
+    <button class="signout-btn" onclick="logout()" data-i18n="btn.signout">Sign out</button>
+  </div>
+
+  <div class="content">
+    <div class="summary">
+      <div class="sum-card total">
+        <div class="s-icon">📬</div>
+        <div><div class="s-num" id="statAll">—</div><div class="s-lbl">Total</div></div>
+      </div>
+      <div class="sum-card contact">
+        <div class="s-icon">💬</div>
+        <div><div class="s-num" id="statContact">—</div><div class="s-lbl">Contact Us</div></div>
+      </div>
+      <div class="sum-card cmp">
+        <div class="s-icon">⚠️</div>
+        <div><div class="s-num" id="statComplaint">—</div><div class="s-lbl">Complaints</div></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="tabs">
+        <button class="tab active" id="tabAll" onclick="switchTab('all')"><span data-i18n="msg.tabAll">All</span> <span class="pill" id="cntAll">0</span></button>
+        <button class="tab" id="tabContact" onclick="switchTab('contact')"><span data-i18n="msg.tabContact">Contact Us</span> <span class="pill" id="cntContact">0</span></button>
+        <button class="tab" id="tabComplaint" onclick="switchTab('complaint')"><span data-i18n="msg.tabComp">Complaints</span> <span class="pill" id="cntComplaint">0</span></button>
+      </div>
+      <div class="controls">
+        <select class="filter-sel" id="readFilter" onchange="renderTable()">
+          <option value="">All status</option>
+          <option value="unread">Unread</option>
+          <option value="read">Read</option>
+        </select>
+        <div class="search-wrap">
+          <span class="s-ic">🔍</span>
+          <input type="search" id="searchInput" placeholder="Search name, subject…" oninput="renderTable()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="msg.thSource">Source</th><th data-i18n="msg.thCustomer">Customer</th><th data-i18n="msg.thSubject">Subject / Type</th>
+            <th data-i18n="msg.thStatus">Status</th><th data-i18n="msg.thReply">Reply</th><th data-i18n="msg.thDate">Date</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="7"><div class="empty"><div class="e-icon">⏳</div><p>Loading…</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW OVERLAY -->
+<div class="overlay" id="viewOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2 id="viewTitle">Message Details</h2>
+        <div class="src-badge" id="viewSrcBadge"></div>
+      </div>
+      <button class="close-btn" onclick="closeView()">✕</button>
+    </div>
+    <div id="viewContent"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="viewReplyBtn" onclick="openReplyFromView()">✉️ Reply</button>
+      <button class="btn btn-danger"  id="viewDeleteBtn" onclick="deleteCurrent()">Delete</button>
+      <button class="btn btn-ghost"   onclick="closeView()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPLY OVERLAY -->
+<div class="overlay" id="replyOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Reply to Customer</h2>
+      <button class="close-btn" onclick="closeReply()">✕</button>
+    </div>
+    <div class="reply-to-info" id="replyInfo"></div>
+    <div class="err-msg" id="replyErr">Please write a reply before sending.</div>
+    <p class="sec-title">Your Message</p>
+    <textarea id="replyText" rows="7" placeholder="Write a clear and helpful reply…"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-success" id="sendBtn" onclick="sendReply()">Send Reply</button>
+      <button class="btn btn-ghost" onclick="closeReply()">Cancel</button>
+    </div>
+    <p style="font-size:11px;color:#9ca3af;margin-top:14px">Reply is sent from the MESOB official email system to the customer's email address.</p>
+  </div>
+</div>
+
+<script src="messages.js"></script>
+<script src="admin-prefs.js"></script>
+</body>
+</html>
+
+
+
+
+
