@@ -101,9 +101,11 @@ exports.createNews = async (req, res, next) => {
       newsData.videoUrl = vid ? `https://www.youtube.com/embed/${vid}` : videoUrl;
     }
 
-    // Handle uploaded image
-    if (req.file) {
-      newsData.imageUrl = `/uploads/news/${req.file.filename}`;
+    // Handle uploaded image(s)
+    if (req.files && req.files.length > 0) {
+      const urls = req.files.map(f => `/uploads/news/${f.filename}`);
+      newsData.imageUrl  = urls[0];
+      newsData.imageUrls = urls;
     }
 
     const item = await News.create(newsData);
@@ -147,14 +149,11 @@ exports.updateNews = async (req, res, next) => {
       update.videoUrl = vid ? `https://www.youtube.com/embed/${vid}` : videoUrl;
     }
 
-    // Handle new uploaded image
-    if (req.file) {
-      // Delete old image if exists
-      if (existing.imageUrl) {
-        const oldPath = path.join(__dirname, '../../public/admin/uploads', existing.imageUrl.replace('/uploads/', ''));
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      }
-      update.imageUrl = `/uploads/news/${req.file.filename}`;
+    // Handle new uploaded image(s)
+    if (req.files && req.files.length > 0) {
+      const urls = req.files.map(f => `/uploads/news/${f.filename}`);
+      update.imageUrl  = urls[0];
+      update.imageUrls = urls;
     }
 
     const item = await News.findByIdAndUpdate(req.params.id, update, { new: true });

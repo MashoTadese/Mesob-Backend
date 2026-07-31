@@ -25,7 +25,6 @@ async function loadContent() {
     document.getElementById('para1').value = c.about_para1 || '';
     document.getElementById('para2').value = c.about_para2 || '';
     document.getElementById('para3').value = c.about_para3 || '';
-    // highlights stored as array under key "highlights"
     var h = c.highlights || [];
     document.getElementById('h1').value = h[0] || '';
     document.getElementById('h2').value = h[1] || '';

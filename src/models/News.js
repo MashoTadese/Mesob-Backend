@@ -17,8 +17,9 @@ const NewsSchema = new mongoose.Schema({
 
   // Media
   type:        { type: String, enum: ['text', 'image', 'video'], default: 'text' },
-  imageUrl:    { type: String, default: '' }, // uploaded image path
-  videoUrl:    { type: String, default: '' }, // YouTube URL
+  imageUrl:    { type: String, default: '' },       // single image (legacy)
+  imageUrls:   { type: [String], default: [] },     // multiple images
+  videoUrl:    { type: String, default: '' },        // YouTube URL
 
   // Category tag
   category:    { type: String, default: 'General' },

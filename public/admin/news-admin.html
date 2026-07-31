@@ -222,10 +222,11 @@ nav a.active { color: #f5c400; background: rgba(245,196,0,.1); border-left-color
           <!-- Image upload -->
           <div class="media-section" id="imageSection">
             <div class="form-group">
-              <label>Upload Image</label>
+              <label>Upload Image(s) — hold Ctrl/Cmd to select multiple</label>
               <div class="img-preview" id="imgPreview" onclick="document.getElementById('imageInput').click()">📷</div>
-              <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="previewImage(this)">
-              <div style="font-size:11px;color:#9ca3af">Click to upload — JPG, PNG, GIF (max 10MB)</div>
+              <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
+              <div id="imgPreviewGrid" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:4px">JPG, PNG, GIF — max 10 images, 10MB each</div>
             </div>
           </div>
 

@@ -27,7 +27,20 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', process.env.FRONTEND_URL],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    const allowed = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+    // Also allow any vercel.app domain
+    if (allowed.includes(origin) || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(null, true); // allow all for now
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

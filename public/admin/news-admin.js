@@ -43,16 +43,33 @@ function setType(type) {
   if (vid) vid.classList.toggle('show', type === 'video');
 }
 
-// Image preview
-function previewImage(input) {
-  var file = input.files[0];
-  if (!file) return;
+// Image preview — single or multiple
+function previewImages(input) {
+  var files = input.files;
+  if (!files || !files.length) return;
+  // Show first image in main preview box
   var reader = new FileReader();
   reader.onload = function(e) {
     var preview = document.getElementById('imgPreview');
     if (preview) preview.innerHTML = '<img src="' + e.target.result + '">';
   };
-  reader.readAsDataURL(file);
+  reader.readAsDataURL(files[0]);
+  // Show thumbnails grid
+  var grid = document.getElementById('imgPreviewGrid');
+  if (grid) {
+    grid.innerHTML = '';
+    Array.from(files).forEach(function(file, i) {
+      var r = new FileReader();
+      r.onload = function(e) {
+        var thumb = document.createElement('div');
+        thumb.style.cssText = 'position:relative;width:60px;height:60px;border-radius:8px;overflow:hidden;border:2px solid #e5e7eb;flex-shrink:0;';
+        thumb.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover">'
+          + '<span style="position:absolute;bottom:1px;right:2px;font-size:9px;font-weight:700;background:rgba(0,0,0,0.55);color:#fff;padding:1px 3px;border-radius:3px">' + (i+1) + '</span>';
+        grid.appendChild(thumb);
+      };
+      r.readAsDataURL(file);
+    });
+  }
 }
 
 // YouTube ID extractor
@@ -107,12 +124,14 @@ async function loadNews() {
     var BASE = window.location.origin;
     list.innerHTML = data.data.map(function(n) {
       var typeLabel = n.type === 'image' ? 'Image' : n.type === 'video' ? 'Video' : 'Text';
-      var thumb = n.imageUrl
-        ? '<img src="' + BASE + n.imageUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">'
+      var firstImg  = (n.imageUrls && n.imageUrls.length > 0) ? n.imageUrls[0] : n.imageUrl;
+      var imgCount  = (n.imageUrls && n.imageUrls.length > 1) ? ' <span style="font-size:9px;background:#0f1f5c;color:#fff;padding:1px 5px;border-radius:10px">+' + (n.imageUrls.length - 1) + '</span>' : '';
+      var thumb = firstImg
+        ? '<img src="' + BASE + firstImg + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">'
         : (n.type === 'video' ? '[Video]' : '[Text]');
 
       return '<div class="news-item">'
-        + '<div class="news-thumb">' + thumb + '</div>'
+        + '<div class="news-thumb" style="position:relative">' + thumb + imgCount + '</div>'
         + '<div class="news-info">'
         +   '<div class="ni-title">' + escHtml(n.titleEN) + '</div>'
         +   '<div class="ni-meta">'
@@ -166,8 +185,12 @@ async function savePost() {
     fd.append('videoUrl', (document.getElementById('videoUrl') || {value:''}).value.trim());
   }
   if (currentType === 'image') {
-    var imgFile = document.getElementById('imageInput').files[0];
-    if (imgFile) fd.append('image', imgFile);
+    var imgFiles = document.getElementById('imageInput').files;
+    if (imgFiles && imgFiles.length > 0) {
+      Array.from(imgFiles).forEach(function(file) {
+        fd.append('images', file);
+      });
+    }
   }
 
   try {
@@ -286,7 +309,9 @@ function resetForm() {
   var imgInput = document.getElementById('imageInput');
   if (imgInput) imgInput.value = '';
   var imgPrev = document.getElementById('imgPreview');
-  if (imgPrev) imgPrev.innerHTML = 'Click to upload image';
+  if (imgPrev) imgPrev.innerHTML = '📷';
+  var imgGrid = document.getElementById('imgPreviewGrid');
+  if (imgGrid) imgGrid.innerHTML = '';
   var vidPrev = document.getElementById('videoPreview');
   if (vidPrev) vidPrev.style.display = 'none';
   var vidFrame = document.getElementById('videoFrame');
