@@ -9,6 +9,7 @@ const { protect, adminOnly } = require('../middleware/auth');
 const {
   register, login, getMe, getAllAdmins, getDashboard,
   updateProfile, changePassword, uploadAvatar,
+  forgotPassword, resetPassword,
 } = require('../controllers/adminController');
 
 // Multer storage for avatar
@@ -30,8 +31,10 @@ const upload = multer({
 });
 
 // Public
-router.post('/register', register);
-router.post('/login',    login);
+router.post('/register',         register);
+router.post('/login',            login);
+router.post('/forgot-password',  forgotPassword);
+router.post('/reset-password',   resetPassword);
 
 // Protected
 router.get('/me',              protect, getMe);

@@ -20,6 +20,7 @@ const DEFAULTS = {
   // Site-wide defaults set by admin — applied to public frontend
   site_default_lang:   'or',
   site_default_theme:  'light',
+  allow_anonymous_complaints: true,
 };
 
 // @desc  Get all site content (PUBLIC)

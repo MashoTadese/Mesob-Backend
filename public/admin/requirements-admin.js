@@ -136,19 +136,19 @@ function renderList() {
     var winLabel = key.split('||')[1];
     var items    = groups[key];
     html += '<div class="win-group">'
-      + '<div class="win-group-header">🏢 ' + escHtml(winLabel) + ' <span class="win-group-count">' + items.length + ' service' + (items.length > 1 ? 's' : '') + '</span></div>'
+      + '<div class="win-group-header">' + escHtml(winLabel) + ' <span class="win-group-count">' + items.length + ' service' + (items.length > 1 ? 's' : '') + '</span></div>'
       + items.map(function(r) {
           return '<div class="req-row">'
             + '<div class="req-info">'
             +   '<div class="req-name">' + escHtml(r.serviceName) + '</div>'
             +   '<div class="req-meta">'
-            +     '<span class="meta-badge">⏱ ' + escHtml(r.processingTimeEN || r.processingTime || '—') + '</span>'
-            +     '<span class="meta-badge">💰 ' + escHtml(r.feeEN || r.fee || '—') + '</span>'
-            +     '<span class="meta-badge">📋 ' + ((r.requirementsEN && r.requirementsEN.length) || (r.requirements && r.requirements.length) || 0) + ' docs</span>'
-            +     '<span class="meta-badge">🪜 ' + ((r.stepsEN && r.stepsEN.length) || (r.steps && r.steps.length) || 0) + ' steps</span>'
-            +     '<span class="meta-badge" style="color:#059669">🇬🇧' + (r.requirementsEN && r.requirementsEN.length ? ' ✓' : ' ✗') + '</span>'
-            +     '<span class="meta-badge" style="color:#0f1f5c">🇪🇹' + (r.requirementsAM && r.requirementsAM.length ? ' ✓' : ' ✗') + '</span>'
-            +     '<span class="meta-badge" style="color:#6b7280">🌿' + (r.requirementsOR && r.requirementsOR.length ? ' ✓' : ' ✗') + '</span>'
+            +     '<span class="meta-badge">Time: ' + escHtml(r.processingTimeEN || r.processingTime || '—') + '</span>'
+            +     '<span class="meta-badge">Fee: ' + escHtml(r.feeEN || r.fee || '—') + '</span>'
+            +     '<span class="meta-badge">' + ((r.requirementsEN && r.requirementsEN.length) || (r.requirements && r.requirements.length) || 0) + ' docs</span>'
+            +     '<span class="meta-badge">' + ((r.stepsEN && r.stepsEN.length) || (r.steps && r.steps.length) || 0) + ' steps</span>'
+            +     '<span class="meta-badge" style="color:#059669">EN ' + (r.requirementsEN && r.requirementsEN.length ? 'done' : 'empty') + '</span>'
+            +     '<span class="meta-badge" style="color:#0f1f5c">AM ' + (r.requirementsAM && r.requirementsAM.length ? 'done' : 'empty') + '</span>'
+            +     '<span class="meta-badge" style="color:#6b7280">OR ' + (r.requirementsOR && r.requirementsOR.length ? 'done' : 'empty') + '</span>'
             +   '</div>'
             + '</div>'
             + '<div class="req-actions">'
@@ -229,7 +229,7 @@ document.getElementById('reqForm').addEventListener('submit', async function(e) 
   var serviceName = document.getElementById('reqServiceName').value.trim();
   if (!serviceName) {
     showAlert('editorAlert', 'Service name is required.', 'error');
-    if (btn) { btn.textContent = '💾 Save'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Save'; btn.disabled = false; }
     return;
   }
 
@@ -262,7 +262,7 @@ document.getElementById('reqForm').addEventListener('submit', async function(e) 
     if (res.status === 401) { alert('Session expired. Please log in again.'); window.location.href = 'login.html'; return; }
     var data = await res.json();
     if (data.success) {
-      showAlert('listAlert', '✅ ' + serviceName + ' saved successfully!', 'success');
+      showAlert('listAlert', serviceName + ' saved successfully!', 'success');
       closeEditor();
       loadRequirements();
     } else {
@@ -271,7 +271,7 @@ document.getElementById('reqForm').addEventListener('submit', async function(e) 
   } catch(err) {
     showAlert('editorAlert', 'Error: ' + err.message, 'error');
   } finally {
-    if (btn) { btn.textContent = '💾 Save'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Save'; btn.disabled = false; }
   }
 });
 
@@ -285,7 +285,7 @@ async function deleteReq(id, name) {
     });
     var data = await res.json();
     if (data.success) {
-      showAlert('listAlert', '✅ Deleted.', 'success');
+      showAlert('listAlert', 'Deleted.', 'success');
       loadRequirements();
     } else {
       showAlert('listAlert', data.message || 'Delete failed', 'error');

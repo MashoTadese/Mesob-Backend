@@ -159,3 +159,90 @@ exports.getDashboard = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc  Forgot password — send reset email
+// @route POST /api/admin/forgot-password
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required.' });
+
+    const admin = await Admin.findOne({ email: email.toLowerCase() });
+    if (!admin) return res.status(404).json({ success: false, message: 'No admin account found with that email.' });
+
+    // Generate a secure random token
+    const crypto = require('crypto');
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Hash token and save to DB with 1-hour expiry
+    admin.resetPasswordToken  = crypto.createHash('sha256').update(resetToken).digest('hex');
+    admin.resetPasswordExpire = Date.now() + 60 * 60 * 1000; // 1 hour
+    await admin.save({ validateBeforeSave: false });
+
+    // Build reset URL
+    const adminUrl = process.env.ADMIN_URL || 'http://localhost:5000';
+    const resetUrl = `${adminUrl}/admin/reset-password.html?token=${resetToken}`;
+
+    // Send email
+    const nodemailer = require('nodemailer');
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: 465,
+      secure: true,
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to:   admin.email,
+      subject: 'MESOB Admin — Password Reset Request',
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:24px;border:1px solid #e9ecf0;border-radius:12px">
+          <h2 style="color:#0F1F5C;margin-bottom:8px">Password Reset Request</h2>
+          <p style="color:#374151">Hello <strong>${admin.name}</strong>,</p>
+          <p style="color:#374151">You requested to reset your MESOB admin password. Click the button below to set a new password:</p>
+          <a href="${resetUrl}" style="display:inline-block;margin:20px 0;padding:12px 28px;background:#0F1F5C;color:#fff;text-decoration:none;border-radius:8px;font-weight:700">Reset Password</a>
+          <p style="color:#6b7280;font-size:13px">This link expires in <strong>1 hour</strong>. If you did not request this, ignore this email.</p>
+          <hr style="border:none;border-top:1px solid #e9ecf0;margin:20px 0">
+          <p style="color:#9ca3af;font-size:11px">MESOB Sululta Branch — Admin Panel</p>
+        </div>
+      `,
+    });
+
+    res.json({ success: true, message: 'Password reset link sent to ' + admin.email });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc  Reset password using token
+// @route POST /api/admin/reset-password
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { token, password, confirmPassword } = req.body;
+    if (!token || !password) return res.status(400).json({ success: false, message: 'Token and new password are required.' });
+    if (password !== confirmPassword) return res.status(400).json({ success: false, message: 'Passwords do not match.' });
+    if (password.length < 8) return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+
+    // Hash the token to find the matching admin
+    const crypto = require('crypto');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const admin = await Admin.findOne({
+      resetPasswordToken:  hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!admin) return res.status(400).json({ success: false, message: 'Reset link is invalid or has expired.' });
+
+    // Set new password and clear reset fields
+    admin.password            = password;
+    admin.resetPasswordToken  = undefined;
+    admin.resetPasswordExpire = undefined;
+    await admin.save();
+
+    res.json({ success: true, message: 'Password reset successfully. You can now log in.' });
+  } catch (err) {
+    next(err);
+  }
+};

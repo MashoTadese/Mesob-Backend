@@ -337,25 +337,25 @@ textarea:focus { border-color: #0f1f5c; }
   </div>
   <div class="gold-bar"></div>
   <nav>
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="about.html">ℹ️ About Us</a>
-    <a href="services-admin.html">🏛️ Services</a>
-    <a href="requirements-admin.html"> Requirements</a>
-    <a href="complaints.html">⚠️ Complaints</a>
-    <a href="faq-admin.html">❓ FAQ</a>
-    <a href="messages.html" class="active">✉️ Messages</a>
-    <a href="news-admin.html">📰 News</a>
-    <a href="contact-admin.html">📞 Contact Us</a>
-    <a href="profile.html">👤 Profile</a>
-    <a href="settings.html">⚙️ Settings</a>
-    <a href="analytics.html">📈 Analytics</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="about.html">About Us</a>
+    <a href="services-admin.html">Services</a>
+    <a href="requirements-admin.html">Requirements</a>
+    <a href="complaints.html">Complaints</a>
+    <a href="faq-admin.html">FAQ</a>
+    <a href="messages.html" class="active">Messages</a>
+    <a href="news-admin.html">News</a>
+    <a href="contact-admin.html">Contact Us</a>
+    <a href="profile.html">Profile</a>
+    <a href="settings.html">Settings</a>
+    <a href="analytics.html">Analytics</a>
   </nav>
 </div>
 
 <div class="main">
   <div class="topbar">
     <div>
-      <div class="topbar-title" data-i18n="msg.title">✉️ Messages &amp; Complaints</div>
+      <div class="topbar-title" data-i18n="msg.title">Messages &amp; Complaints</div>
       <div class="topbar-sub" data-i18n="msg.subtitle">All customer communications in one place</div>
     </div>
     <button class="signout-btn" onclick="logout()" data-i18n="btn.signout">Sign out</button>
@@ -364,15 +364,15 @@ textarea:focus { border-color: #0f1f5c; }
   <div class="content">
     <div class="summary">
       <div class="sum-card total">
-        <div class="s-icon">📬</div>
+        <div class="s-icon"></div>
         <div><div class="s-num" id="statAll">—</div><div class="s-lbl">Total</div></div>
       </div>
       <div class="sum-card contact">
-        <div class="s-icon">💬</div>
+        <div class="s-icon"></div>
         <div><div class="s-num" id="statContact">—</div><div class="s-lbl">Contact Us</div></div>
       </div>
       <div class="sum-card cmp">
-        <div class="s-icon">⚠️</div>
+        <div class="s-icon"></div>
         <div><div class="s-num" id="statComplaint">—</div><div class="s-lbl">Complaints</div></div>
       </div>
     </div>
@@ -390,7 +390,7 @@ textarea:focus { border-color: #0f1f5c; }
           <option value="read">Read</option>
         </select>
         <div class="search-wrap">
-          <span class="s-ic">🔍</span>
+          <span class="s-ic"></span>
           <input type="search" id="searchInput" placeholder="Search name, subject…" oninput="renderTable()">
         </div>
       </div>
@@ -405,7 +405,7 @@ textarea:focus { border-color: #0f1f5c; }
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="7"><div class="empty"><div class="e-icon">⏳</div><p>Loading…</p></div></td></tr>
+          <tr><td colspan="7"><div class="empty"><div class="e-icon"></div><p>Loading…</p></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -424,7 +424,7 @@ textarea:focus { border-color: #0f1f5c; }
     </div>
     <div id="viewContent"></div>
     <div class="modal-actions">
-      <button class="btn btn-primary" id="viewReplyBtn" onclick="openReplyFromView()">✉️ Reply</button>
+      <button class="btn btn-primary" id="viewReplyBtn" onclick="openReplyFromView()">Reply</button>
       <button class="btn btn-danger"  id="viewDeleteBtn" onclick="deleteCurrent()">Delete</button>
       <button class="btn btn-ghost"   onclick="closeView()">Close</button>
     </div>

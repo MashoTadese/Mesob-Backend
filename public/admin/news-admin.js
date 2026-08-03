@@ -124,10 +124,20 @@ async function loadNews() {
     var BASE = window.location.origin;
     list.innerHTML = data.data.map(function(n) {
       var typeLabel = n.type === 'image' ? 'Image' : n.type === 'video' ? 'Video' : 'Text';
-      var firstImg  = (n.imageUrls && n.imageUrls.length > 0) ? n.imageUrls[0] : n.imageUrl;
+      // Prefer imageUrls array, fall back to single imageUrl
+      var firstImg = '';
+      if (n.imageUrls && n.imageUrls.length > 0 && n.imageUrls[0]) {
+        firstImg = n.imageUrls[0];
+      } else if (n.imageUrl && n.imageUrl.length > 0) {
+        firstImg = n.imageUrl;
+      }
       var imgCount  = (n.imageUrls && n.imageUrls.length > 1) ? ' <span style="font-size:9px;background:#0f1f5c;color:#fff;padding:1px 5px;border-radius:10px">+' + (n.imageUrls.length - 1) + '</span>' : '';
-      var thumb = firstImg
-        ? '<img src="' + BASE + firstImg + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px">'
+      // Handle both Cloudinary full URLs and local paths
+      var imgSrc = firstImg
+        ? (firstImg.startsWith('http') ? firstImg : BASE + firstImg)
+        : null;
+      var thumb = imgSrc
+        ? '<img src="' + imgSrc + '" alt="" onerror="this.style.display=\'none\'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">'
         : (n.type === 'video' ? '[Video]' : '[Text]');
 
       return '<div class="news-item">'
@@ -250,8 +260,9 @@ async function editPost(id) {
     setType(n.type || 'text');
 
     if (n.imageUrl) {
+      var imgSrc = n.imageUrl.startsWith('http') ? n.imageUrl : window.location.origin + n.imageUrl;
       var prev = document.getElementById('imgPreview');
-      if (prev) prev.innerHTML = '<img src="' + window.location.origin + n.imageUrl + '" style="width:100%;height:100%;object-fit:cover">';
+      if (prev) prev.innerHTML = '<img src="' + imgSrc + '" style="width:100%;height:100%;object-fit:cover">';
     }
     if (n.videoUrl) {
       var frm   = document.getElementById('videoFrame');
@@ -309,7 +320,7 @@ function resetForm() {
   var imgInput = document.getElementById('imageInput');
   if (imgInput) imgInput.value = '';
   var imgPrev = document.getElementById('imgPreview');
-  if (imgPrev) imgPrev.innerHTML = '📷';
+  if (imgPrev) imgPrev.innerHTML = '<span style="font-size:32px;color:#d1d5db">&#128247;</span>';
   var imgGrid = document.getElementById('imgPreviewGrid');
   if (imgGrid) imgGrid.innerHTML = '';
   var vidPrev = document.getElementById('videoPreview');

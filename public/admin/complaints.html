@@ -65,26 +65,40 @@ tr:hover td{background:#f9fafb}
   </div>
   <div class="gold-line"></div>
   <nav>
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="about.html">ℹ️ About Us</a>
-    <a href="services-admin.html">🏛️ Services</a>
-    <a href="requirements-admin.html"> Requirements</a>
-    <a href="complaints.html" class="active">⚠️ Complaints</a>
-    <a href="faq-admin.html">❓ FAQ</a>
-    <a href="messages.html">✉️ Messages</a>
-    <a href="news-admin.html">📰 News</a>
-    <a href="contact-admin.html">📞 Contact Us</a>
-    <a href="profile.html">👤 Profile</a>
-    <a href="settings.html">⚙️ Settings</a>
-    <a href="analytics.html">📈 Analytics</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="about.html">About Us</a>
+    <a href="services-admin.html">Services</a>
+    <a href="requirements-admin.html">Requirements</a>
+    <a href="complaints.html" class="active">Complaints</a>
+    <a href="faq-admin.html">FAQ</a>
+    <a href="messages.html">Messages</a>
+    <a href="news-admin.html">News</a>
+    <a href="contact-admin.html">Contact Us</a>
+    <a href="profile.html">Profile</a>
+    <a href="settings.html">Settings</a>
+    <a href="analytics.html">Analytics</a>
   </nav>
 </div>
 <div class="main">
   <div class="topbar">
-    <h1 data-i18n="comp.title">⚠️ Complaints Management</h1>
+    <h1 data-i18n="comp.title">Complaints Management</h1>
     <button class="logout-btn" onclick="logout()" data-i18n="btn.signout">Sign Out</button>
   </div>
   <div class="content">
+
+    <!-- Anonymous Complaints Toggle -->
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px 22px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#1E3578">Anonymous Complaints</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:3px" id="anonStatusText">Loading...</div>
+      </div>
+      <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer">
+        <input type="checkbox" id="anonToggle" onchange="toggleAnonymous()" style="opacity:0;width:0;height:0">
+        <span id="anonTrack" style="position:absolute;inset:0;background:#e5e7eb;border-radius:28px;transition:.3s"></span>
+        <span id="anonThumb" style="position:absolute;top:4px;left:4px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></span>
+      </label>
+    </div>
+
     <div class="filters">
       <input type="search" id="searchInput" placeholder="Search by name or ref #..." data-i18n="comp.searchPH" data-i18n-attr="placeholder" oninput="load()" style="min-width:220px">
       <select id="statusFilter" onchange="load()">
@@ -143,7 +157,7 @@ tr:hover td{background:#f9fafb}
     <div class="btn-row">
       <button class="btn btn-primary" onclick="updateComplaint()" data-i18n="btn.save">Save Changes</button>
       <button class="btn btn-secondary" onclick="closeModal()" data-i18n="btn.close">Close</button>
-      <button class="btn" style="background:#fee2e2;color:#dc2626;margin-left:auto" onclick="deleteComplaint()" data-i18n="btn.delete">🗑 Delete</button>
+      <button class="btn" style="background:#fee2e2;color:#dc2626;margin-left:auto" onclick="deleteComplaint()" data-i18n="btn.delete">Delete</button>
     </div>
   </div>
 </div>

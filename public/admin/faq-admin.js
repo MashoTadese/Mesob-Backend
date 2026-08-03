@@ -64,7 +64,7 @@ document.getElementById('faqForm').addEventListener('submit', async function (e)
     });
     var data = await res.json();
     if (data.success) {
-      showAlert('addAlert', '✅ FAQ added successfully!', 'success');
+      showAlert('addAlert', 'FAQ added successfully!', 'success');
       document.getElementById('faqForm').reset();
       loadFAQs();
     } else {
@@ -84,7 +84,7 @@ async function deleteFAQ(id) {
     });
     var data = await res.json();
     if (data.success) {
-      showAlert('listAlert', '✅ FAQ deleted.', 'success');
+      showAlert('listAlert', 'FAQ deleted.', 'success');
       loadFAQs();
     } else {
       showAlert('listAlert', data.message || 'Failed to delete.', 'error');

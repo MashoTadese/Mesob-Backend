@@ -8,6 +8,56 @@ function logout() {
   window.location.href = 'login.html';
 }
 
+// ── Anonymous Complaints Toggle ──────────────────────────────
+async function loadAnonSetting() {
+  try {
+    var res  = await fetch(API + '/content');
+    var data = await res.json();
+    var allowed = data.success && data.data && data.data.allow_anonymous_complaints !== false;
+    updateAnonUI(allowed);
+  } catch (e) { updateAnonUI(true); }
+}
+
+function updateAnonUI(allowed) {
+  var toggle = document.getElementById('anonToggle');
+  var track  = document.getElementById('anonTrack');
+  var thumb  = document.getElementById('anonThumb');
+  var text   = document.getElementById('anonStatusText');
+  if (!toggle) return;
+  toggle.checked = allowed;
+  track.style.background = allowed ? '#059669' : '#e5e7eb';
+  thumb.style.transform  = allowed ? 'translateX(24px)' : 'translateX(0)';
+  text.textContent = allowed
+    ? 'Citizens can submit complaints anonymously — currently ON'
+    : 'Anonymous submissions disabled — citizens must provide their name — currently OFF';
+  text.style.color = allowed ? '#059669' : '#dc2626';
+}
+
+async function toggleAnonymous() {
+  var toggle  = document.getElementById('anonToggle');
+  var allowed = toggle.checked;
+  try {
+    var res  = await fetch(API + '/content', {
+      method:  'PUT',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ allow_anonymous_complaints: allowed }),
+    });
+    var data = await res.json();
+    if (data.success) {
+      updateAnonUI(allowed);
+    } else {
+      toggle.checked = !allowed; // revert
+      alert('Failed to update setting: ' + data.message);
+    }
+  } catch (e) {
+    toggle.checked = !allowed; // revert
+    alert('Network error: ' + e.message);
+  }
+}
+
+// Load setting on page load
+loadAnonSetting();
+
 // Escape HTML to prevent XSS when rendering user-submitted content
 function escHtml(str) {
   return String(str || '')
@@ -72,7 +122,7 @@ async function load() {
         + '</tr>';
     }).join('');
   } catch (err) {
-    showTableError('❌ Failed to load: ' + err.message + '. Is the backend running?');
+    showTableError('Failed to load: ' + err.message + '. Is the backend running?');
   }
 }
 
@@ -85,6 +135,18 @@ async function openModal(id) {
     if (!res.ok) throw new Error('Server error ' + res.status);
     var data = await res.json();
     var c    = data.data;
+
+    // Auto-change status: pending → under_review when admin opens/reads the complaint
+    if (c.status === 'pending') {
+      try {
+        await fetch(API + '/complaints/' + id, {
+          method: 'PUT',
+          headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'under_review' })
+        });
+        c.status = 'under_review'; // update local copy
+      } catch (e) { /* non-critical, continue */ }
+    }
 
     document.getElementById('modalContent').innerHTML =
       '<div class="detail-row"><label>Reference #</label><span><strong>' + escHtml(c.refNumber) + '</strong></span></div>'
@@ -113,8 +175,14 @@ function closeModal() {
 
 async function updateComplaint() {
   try {
-    var newStatus  = document.getElementById('newStatus').value;
+    var newStatus   = document.getElementById('newStatus').value;
     var newResponse = document.getElementById('response').value.trim();
+
+    // Auto-set status to resolved when admin writes a response
+    if (newResponse) {
+      newStatus = 'resolved';
+      document.getElementById('newStatus').value = 'resolved';
+    }
 
     // Don't allow saving a blank response if there was already one — it would erase it
     var payload = { status: newStatus };
@@ -130,7 +198,11 @@ async function updateComplaint() {
     if (data.success) {
       closeModal();
       load();
-      alert('Complaint updated!' + (newResponse ? ' If the customer provided their email, they have been notified.' : ''));
+      if (newResponse) {
+        alert('Response sent! Status set to Resolved. If the client provided their email, they have been notified automatically.');
+      } else {
+        alert('Complaint status updated.');
+      }
     } else {
       alert('Error: ' + data.message);
     }

@@ -101,9 +101,12 @@ exports.createNews = async (req, res, next) => {
       newsData.videoUrl = vid ? `https://www.youtube.com/embed/${vid}` : videoUrl;
     }
 
-    // Handle uploaded image(s)
-    if (req.files && req.files.length > 0) {
-      const urls = req.files.map(f => `/uploads/news/${f.filename}`);
+    // Handle uploaded image — Cloudinary returns URL in req.file.path or req.file.secure_url
+    if (req.file) {
+      newsData.imageUrl  = req.file.path || req.file.secure_url || `/uploads/news/${req.file.filename}`;
+      newsData.imageUrls = [newsData.imageUrl];
+    } else if (req.files && req.files.length > 0) {
+      const urls = req.files.map(f => f.path || f.secure_url || `/uploads/news/${f.filename}`);
       newsData.imageUrl  = urls[0];
       newsData.imageUrls = urls;
     }
@@ -149,9 +152,12 @@ exports.updateNews = async (req, res, next) => {
       update.videoUrl = vid ? `https://www.youtube.com/embed/${vid}` : videoUrl;
     }
 
-    // Handle new uploaded image(s)
-    if (req.files && req.files.length > 0) {
-      const urls = req.files.map(f => `/uploads/news/${f.filename}`);
+    // Handle new uploaded image — Cloudinary returns URL in req.file.path or req.file.secure_url
+    if (req.file) {
+      update.imageUrl  = req.file.path || req.file.secure_url || `/uploads/news/${req.file.filename}`;
+      update.imageUrls = [update.imageUrl];
+    } else if (req.files && req.files.length > 0) {
+      const urls = req.files.map(f => f.path || f.secure_url || `/uploads/news/${f.filename}`);
       update.imageUrl  = urls[0];
       update.imageUrls = urls;
     }

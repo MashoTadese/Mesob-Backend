@@ -14,6 +14,9 @@ const AdminSchema = new mongoose.Schema({
   avatar:     { type: String, default: '' },
   phone:      { type: String, default: '' },
   position:   { type: String, default: '' },
+  // Password reset
+  resetPasswordToken:   { type: String },
+  resetPasswordExpire:  { type: Date },
 }, { timestamps: true });
 
 // Hash password before saving

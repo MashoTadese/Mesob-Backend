@@ -31,7 +31,7 @@ function escHtml(str) {
 
 // Window icons — emoji matching the public site icons
 var WIN_ICONS = {
-  1: '🪪', 2: '🤝', 3: '📨', 4: '🏗️', 5: '👤',
+  1: '🪪', 2: '✉️', 3: '📨', 4: '🏗️', 5: '👤',
   6: '💼', 7: '📝', 8: '📈', 9: '🗺️', 10: '💰', 11: '⚙️'
 };
 
@@ -216,10 +216,10 @@ function updateDbStatus(fromDb, count) {
   var el = document.getElementById('dbStatus');
   if (!el) return;
   if (fromDb) {
-    el.textContent = '✅ Data loaded from database (' + count + ' windows). Changes save live to the public site.';
+    el.textContent = 'Data loaded from database (' + count + ' windows). Changes save live to the public site.';
     el.style.color = '#059669';
   } else {
-    el.textContent = '⚠️ No database data yet — showing static defaults. Click "Save All to Database" to persist the data.';
+    el.textContent = 'No database data yet — showing static defaults. Click "Save All to Database" to persist the data.';
     el.style.color = '#d97706';
   }
 }
@@ -237,7 +237,7 @@ async function seedToDatabase() {
     });
     var data = await res.json();
     if (data.success) {
-      showAlert('✅ All ' + data.count + ' windows saved to database!', 'success');
+      showAlert('All ' + data.count + ' windows saved to database!', 'success');
       updateDbStatus(true, data.count);
     } else {
       showAlert(data.message || 'Failed', 'error');
@@ -245,7 +245,7 @@ async function seedToDatabase() {
   } catch(err) {
     showAlert('Error: ' + err.message, 'error');
   } finally {
-    if (btn) { btn.textContent = '💾 Save All to Database'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Save All to Database'; btn.disabled = false; }
   }
 }
 
@@ -268,7 +268,7 @@ function renderWindowsGrid() {
       + '<div class="wc-title">' + escHtml(w.titleEN || '') + '</div>'
       + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">'
       +   '<div class="wc-count">' + (w.services ? w.services.length : 0) + ' services</div>'
-      +   '<span style="font-size:10px;font-weight:700;color:#1e3578;background:#f0f4ff;padding:2px 8px;border-radius:20px">🏢 ' + escHtml(floorBadge) + '</span>'
+      +   '<span style="font-size:10px;font-weight:700;color:#1e3578;background:#f0f4ff;padding:2px 8px;border-radius:20px">' + escHtml(floorBadge) + '</span>'
       + '</div>'
       + '</div>';
   }).join('');
@@ -427,7 +427,7 @@ document.getElementById('winForm').addEventListener('submit', async function(e) 
 
   if (!payload.name || !payload.nameEN) {
     showAlert('Window Name fields are required.', 'error');
-    if (btn) { btn.textContent = '💾 Save Window'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Save Window'; btn.disabled = false; }
     return;
   }
 
@@ -447,7 +447,7 @@ document.getElementById('winForm').addEventListener('submit', async function(e) 
     if (res.status === 401) { showAlert('Session expired. Please log in again.', 'error'); setTimeout(function(){ window.location.href='login.html'; }, 1500); return; }
     var data = await res.json();
     if (data.success) {
-      showAlert((isNew ? '✅ New window created on ' : '✅ ') + payload.floor + (isNew ? '!' : ' — ' + payload.nameEN + ' saved!'), 'success');
+      showAlert((isNew ? 'New window created on ' : '') + payload.floor + (isNew ? '!' : ' — ' + payload.nameEN + ' saved!'), 'success');
       await loadWindows(); // reload from DB
       setTimeout(function() { showWindowsView(); }, 1200);
     } else {
@@ -456,7 +456,7 @@ document.getElementById('winForm').addEventListener('submit', async function(e) 
   } catch(err) {
     showAlert('Error: ' + err.message, 'error');
   } finally {
-    if (btn) { btn.textContent = '💾 Save Window'; btn.disabled = false; }
+    if (btn) { btn.textContent = 'Save Window'; btn.disabled = false; }
   }
 });
 

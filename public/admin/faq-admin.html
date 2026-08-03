@@ -52,37 +52,37 @@ nav a:hover,nav a.active{background:rgba(255,255,255,0.1);color:#F5C400;border-l
   </div>
   <div class="gold-line"></div>
   <nav>
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="about.html">ℹ️ About Us</a>
-    <a href="services-admin.html">🏛️ Services</a>
-    <a href="requirements-admin.html"> Requirements</a>
-    <a href="complaints.html">⚠️ Complaints</a>
-    <a href="faq-admin.html" class="active">❓ FAQ</a>
-    <a href="messages.html">✉️ Messages</a>
-    <a href="news-admin.html">📰 News</a>
-    <a href="contact-admin.html">📞 Contact Us</a>
-    <a href="profile.html">👤 Profile</a>
-    <a href="settings.html">⚙️ Settings</a>
-    <a href="analytics.html">📈 Analytics</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="about.html">About Us</a>
+    <a href="services-admin.html">Services</a>
+    <a href="requirements-admin.html">Requirements</a>
+    <a href="complaints.html">Complaints</a>
+    <a href="faq-admin.html" class="active">FAQ</a>
+    <a href="messages.html">Messages</a>
+    <a href="news-admin.html">News</a>
+    <a href="contact-admin.html">Contact Us</a>
+    <a href="profile.html">Profile</a>
+    <a href="settings.html">Settings</a>
+    <a href="analytics.html">Analytics</a>
   </nav>
 </div>
 <div class="main">
   <div class="topbar">
-    <h1 data-i18n="faq.title">❓ FAQ Management</h1>
+    <h1 data-i18n="faq.title">FAQ Management</h1>
     <button class="logout-btn" onclick="logout()" data-i18n="btn.signout">Sign Out</button>
   </div>
   <div class="content">
     <div class="card">
-      <h2 data-i18n="faq.addCard">➕ Add New FAQ</h2>
+      <h2 data-i18n="faq.addCard">Add New FAQ</h2>
       <div class="alert" id="addAlert"></div>
       <form id="faqForm">
         <div class="form-group"><label data-i18n="faq.question">Question *</label><input type="text" id="faqQuestion" placeholder="e.g. What documents do I need?" data-i18n="faq.questionPH" data-i18n-attr="placeholder" required></div>
         <div class="form-group"><label data-i18n="faq.answer">Answer *</label><textarea id="faqAnswer" rows="4" required></textarea></div>
-        <button type="submit" class="btn btn-primary" data-i18n="btn.addFaq">➕ Add FAQ</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn.addFaq">Add FAQ</button>
       </form>
     </div>
     <div class="card">
-      <h2 data-i18n="faq.listCard">📋 Existing FAQs</h2>
+      <h2 data-i18n="faq.listCard">Existing FAQs</h2>
       <div class="alert" id="listAlert"></div>
       <div class="faq-list" id="faqList"><p class="empty">Loading FAQs...</p></div>
     </div>

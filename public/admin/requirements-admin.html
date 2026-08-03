@@ -4,7 +4,7 @@
 <script>document.documentElement.setAttribute("data-theme",localStorage.getItem("mesob_admin_theme")||"light")</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MESOB Superadmin — Service Requirements</title>
+<title>MESOB Superadmin — ServiceRequirements</title>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fc; color: #111827; }
@@ -112,25 +112,25 @@ nav a.active { color: #f5c400; background: rgba(245,196,0,.1); border-left-color
   </div>
   <div class="gold-bar"></div>
   <nav>
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="about.html">ℹ️ About Us</a>
-    <a href="services-admin.html">🏛️ Services</a>
-    <a href="requirements-admin.html" class="active">📋 Requirements</a>
-    <a href="complaints.html">⚠️ Complaints</a>
-    <a href="faq-admin.html">❓ FAQ</a>
-    <a href="messages.html">✉️ Messages</a>
-    <a href="news-admin.html">📰 News</a>
-    <a href="contact-admin.html">📞 Contact Us</a>
-    <a href="profile.html">👤 Profile</a>
-    <a href="settings.html">⚙️ Settings</a>
-    <a href="analytics.html">📈 Analytics</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="about.html">About Us</a>
+    <a href="services-admin.html">Services</a>
+    <a href="requirements-admin.html" class="active">Requirements</a>
+    <a href="complaints.html">Complaints</a>
+    <a href="faq-admin.html">FAQ</a>
+    <a href="messages.html">Messages</a>
+    <a href="news-admin.html">News</a>
+    <a href="contact-admin.html">Contact Us</a>
+    <a href="profile.html">Profile</a>
+    <a href="settings.html">Settings</a>
+    <a href="analytics.html">Analytics</a>
   </nav>
 </div>
 
 <div class="main">
   <div class="topbar">
     <div>
-      <div class="topbar-title">📋 Service Requirements</div>
+      <div class="topbar-title">Service Requirements</div>
       <div class="topbar-sub">Manage required documents, processing time, fee and steps for each service</div>
     </div>
     <button class="signout-btn" onclick="logout()">Sign Out</button>
@@ -142,7 +142,7 @@ nav a.active { color: #f5c400; background: rgba(245,196,0,.1); border-left-color
     <div id="listView">
       <div class="alert" id="listAlert"></div>
       <div class="toolbar">
-        <input type="search" id="searchInput" placeholder="🔍 Search by service name or window...">
+        <input type="search" id="searchInput" placeholder="Search by service name or window...">
         <span class="total" id="totalCount">Loading...</span>
         <button class="btn-new" onclick="openEditor(null)">+ Add Requirement</button>
       </div>
@@ -186,9 +186,9 @@ nav a.active { color: #f5c400; background: rgba(245,196,0,.1); border-left-color
 
             <!-- Language tabs -->
             <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid #e9ecf0;padding-bottom:0">
-              <button type="button" class="lang-tab active" data-lang="EN" onclick="switchLangTab('EN')">🇬🇧 English</button>
-              <button type="button" class="lang-tab" data-lang="AM" onclick="switchLangTab('AM')">🇪🇹 አማርኛ</button>
-              <button type="button" class="lang-tab" data-lang="OR" onclick="switchLangTab('OR')">🌿 Afaan Oromo</button>
+              <button type="button" class="lang-tab active" data-lang="EN" onclick="switchLangTab('EN')">English</button>
+              <button type="button" class="lang-tab" data-lang="AM" onclick="switchLangTab('AM')">አማርኛ</button>
+              <button type="button" class="lang-tab" data-lang="OR" onclick="switchLangTab('OR')">Afaan Oromo</button>
             </div>
 
             <!-- English fields -->
@@ -257,7 +257,7 @@ nav a.active { color: #f5c400; background: rgba(245,196,0,.1); border-left-color
               </div>
             </div>
             <div class="form-actions">
-              <button type="submit" class="btn-primary">💾 Save</button>
+              <button type="submit" class="btn-primary">Save</button>
               <button type="button" class="btn-ghost" onclick="closeEditor()">Cancel</button>
             </div>
           </form>
