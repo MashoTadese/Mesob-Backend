@@ -33,6 +33,7 @@
     'nav.settings':    { en:'Settings',          am:'ቅንብሮች',             or:"Qindaa'ina" },
     'nav.analytics':   { en:'Analytics',         am:'ትንታኔ',               or:'Xiinxala' },
     'nav.news':        { en:'News',               am:'ዜናዎች',               or:'Oduu' },
+    'nav.gallery':     { en:'Gallery',            am:'ጋለሪ',                or:'Galarii' },
 
     // ── Common actions ─────────────────────────
     'btn.signout':     { en:'Sign Out',            am:'ውጣ',                    or:"Ba'i" },
@@ -166,7 +167,8 @@
 
   // ── Step 3: Map nav href → translation key ────────────────
   var NAV_MAP = {
-    'news-admin.html': 'nav.news',
+    'news-admin.html':     'nav.news',
+    'gallery-admin.html':  'nav.gallery',
     'dashboard.html':     'nav.dashboard',
     'about.html':         'nav.about',
     'services-admin.html':'nav.services',

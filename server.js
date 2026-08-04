@@ -89,6 +89,7 @@ app.use('/api/content',    require('./src/routes/contentRoutes'));
 app.use('/api/news',         require('./src/routes/newsRoutes'));
 app.use('/api/services',    require('./src/routes/serviceRoutes'));
 app.use('/api/requirements',require('./src/routes/requirementRoutes'));
+app.use('/api/gallery',     require('./src/routes/galleryRoutes'));
 
 // ── Health check ──
 app.get('/api/health', (req, res) => {
