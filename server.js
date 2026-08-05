@@ -58,8 +58,8 @@ const publicPostLimit = rateLimit({
   message: { success: false, message: 'Too many requests. Please try again in 15 minutes.' },
 });
 const loginLimit = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,                   // max 10 login attempts per IP per 15 min
+  windowMs: 60 * 60 * 1000,
+  max: 5,                    // max 3 login attempts per IP per 15 min
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many login attempts. Please try again in 15 minutes.' },
