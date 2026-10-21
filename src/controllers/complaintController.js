@@ -101,6 +101,7 @@ exports.updateComplaint = async (req, res, next) => {
     if (!complaint) return res.status(404).json({ success: false, message: 'Complaint not found.' });
 
     // Send email response to complainant if they provided email and a response was written
+    console.log('📧 Reply check — response:', !!response, '| email:', complaint.email, '| anonymous:', complaint.anonymous);
     if (response && complaint.email && !complaint.anonymous) {
       await sendEmail({
         to: complaint.email,

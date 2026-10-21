@@ -7,8 +7,8 @@ const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5000';
 
 const transporter = nodemailer.createTransport({
   host:   process.env.EMAIL_HOST,
-  port:   465,
-  secure: true,
+  port:   Number(process.env.EMAIL_PORT) || 587,
+  secure: (Number(process.env.EMAIL_PORT) || 587) === 465,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -22,15 +22,16 @@ const sendEmail = async ({ to, subject, html }) => {
     return;
   }
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || 'MESOB Sululta <noreply@mesob.gov.et>',
       to,
       subject,
       html,
     });
-    console.log(`✅ Email sent to ${to}`);
+    console.log(`✅ Email sent to ${to} — MessageId: ${info.messageId}`);
   } catch (err) {
-    console.error('❌ Email error:', err.message);
+    console.error(`❌ Email error sending to ${to}:`, err.message);
+    console.error('❌ Full error:', err);
   }
 };
 
