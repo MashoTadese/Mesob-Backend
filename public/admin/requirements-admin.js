@@ -31,6 +31,34 @@ var allReqs    = [];
 var editingId  = null;
 var searchTerm = '';
 
+// ── LOAD WINDOWS INTO DROPDOWN ──
+async function loadWindowDropdown(selectedValue) {
+  try {
+    var res  = await fetch(API + '/services');
+    var data = await res.json();
+    var select = document.getElementById('reqWindow');
+    select.innerHTML = '<option value="">— Select Window —</option>';
+    if (data.success && data.data) {
+      var windows = data.data.slice().sort(function(a, b) {
+        return (a.order || 0) - (b.order || 0);
+      });
+      windows.forEach(function(win) {
+        var label = (win.nameEN || win.name || win.windowId || 'Window');
+        var value = win.windowId || win.nameEN || win.name;
+        var opt   = document.createElement('option');
+        opt.value = value;
+        opt.textContent = label;
+        select.appendChild(opt);
+      });
+      // Set selected value after options are built
+      if (selectedValue) select.value = selectedValue;
+    }
+  } catch(e) {
+    var select = document.getElementById('reqWindow');
+    select.innerHTML = '<option value="">— Failed to load windows —</option>';
+  }
+}
+
 // ── LOAD ──
 async function loadRequirements() {
   try {
@@ -186,7 +214,9 @@ function openEditor(id) {
 
   document.getElementById('editorTitle').textContent    = r ? 'Edit: ' + r.serviceName : 'Add New Requirement';
   document.getElementById('reqServiceName').value        = r ? r.serviceName    : '';
-  document.getElementById('reqWindow').value             = r ? (r.window || '') : '';
+
+  // Load windows dynamically from API then set the selected value
+  loadWindowDropdown(r ? (r.window || '') : '');
 
   // English fields
   document.getElementById('reqTimeEN').value  = r ? (r.processingTimeEN || r.processingTime || '') : '';
