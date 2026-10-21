@@ -199,9 +199,20 @@ async function updateComplaint() {
       closeModal();
       load();
       if (newResponse) {
-        alert('Response sent! Status set to Resolved. If the client provided their email, they have been notified automatically.');
+        if (data.emailSent) {
+          alert('✅ Response saved!\n\n📧 Email notification sent to: ' + data.emailAddress + '\n\nStatus set to Resolved.');
+        } else {
+          var complaint = data.data;
+          if (complaint.anonymous) {
+            alert('✅ Response saved!\n\n⚠️ No email sent — this complaint was submitted anonymously.\n\nStatus set to Resolved.');
+          } else if (!complaint.email) {
+            alert('✅ Response saved!\n\n⚠️ No email sent — the citizen did not provide an email address.\n\nStatus set to Resolved.');
+          } else {
+            alert('✅ Response saved!\n\n⚠️ Email could not be sent to: ' + complaint.email + '\nPlease check the server email configuration.\n\nStatus set to Resolved.');
+          }
+        }
       } else {
-        alert('Complaint status updated.');
+        alert('✅ Complaint status updated.');
       }
     } else {
       alert('Error: ' + data.message);

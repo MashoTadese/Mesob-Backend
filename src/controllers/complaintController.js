@@ -102,37 +102,50 @@ exports.updateComplaint = async (req, res, next) => {
 
     // Send email response to complainant if they provided email and a response was written
     console.log('📧 Reply check — response:', !!response, '| email:', complaint.email, '| anonymous:', complaint.anonymous);
+    let emailSent = false;
     if (response && complaint.email && !complaint.anonymous) {
-      await sendEmail({
-        to: complaint.email,
-        subject: `Response to Your Complaint — ${complaint.refNumber} | MESOB Sululta`,
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-            <div style="background:#1E3578;padding:20px;border-radius:8px 8px 0 0">
-              <h2 style="color:#F5C400;margin:0">Response to Your Complaint</h2>
-              <p style="color:rgba(255,255,255,0.7);margin:4px 0 0">MESOB Sululta Branch</p>
-            </div>
-            <div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb">
-              <p>Dear <strong>${complaint.fullName}</strong>,</p>
-              <p style="margin:12px 0">Thank you for submitting your complaint. Here is our response to your concern:</p>
-              <div style="background:#fff;border-left:4px solid #1E3578;padding:16px;border-radius:4px;margin:16px 0">
-                <p style="font-weight:600;color:#1E3578;margin-bottom:8px">Reference #: ${complaint.refNumber}</p>
-                <p style="font-weight:600;margin-bottom:6px">Status: <span style="color:${status==='resolved'?'#059669':'#1d4ed8'}">${status.replace('_',' ').toUpperCase()}</span></p>
-                <p style="font-weight:600;margin:12px 0 6px">Our Response:</p>
-                <p style="color:#374151;line-height:1.6">${response}</p>
+      try {
+        await sendEmail({
+          to: complaint.email,
+          subject: `Response to Your Complaint — ${complaint.refNumber} | MESOB Sululta`,
+          html: `
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+              <div style="background:#1E3578;padding:20px;border-radius:8px 8px 0 0">
+                <h2 style="color:#F5C400;margin:0">Response to Your Complaint</h2>
+                <p style="color:rgba(255,255,255,0.7);margin:4px 0 0">MESOB Sululta Branch</p>
               </div>
-              <p style="color:#6b7280;font-size:13px">If you have further questions, please visit our office or contact us at +251 11 551 2345.</p>
-              <p style="color:#6b7280;font-size:13px;margin-top:8px">Thank you for helping us improve our services.</p>
+              <div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb">
+                <p>Dear <strong>${complaint.fullName}</strong>,</p>
+                <p style="margin:12px 0">Thank you for submitting your complaint. Here is our response to your concern:</p>
+                <div style="background:#fff;border-left:4px solid #1E3578;padding:16px;border-radius:4px;margin:16px 0">
+                  <p style="font-weight:600;color:#1E3578;margin-bottom:8px">Reference #: ${complaint.refNumber}</p>
+                  <p style="font-weight:600;margin-bottom:6px">Status: <span style="color:${status==='resolved'?'#059669':'#1d4ed8'}">${status.replace('_',' ').toUpperCase()}</span></p>
+                  <p style="font-weight:600;margin:12px 0 6px">Our Response:</p>
+                  <p style="color:#374151;line-height:1.6">${response}</p>
+                </div>
+                <p style="color:#6b7280;font-size:13px">If you have further questions, please visit our office or contact us at +251 11 551 2345.</p>
+                <p style="color:#6b7280;font-size:13px;margin-top:8px">Thank you for helping us improve our services.</p>
+              </div>
+              <div style="background:#e5e7eb;padding:12px;text-align:center;font-size:12px;color:#6b7280;border-radius:0 0 8px 8px">
+                MESOB Sululta Branch — One Stop Service Center
+              </div>
             </div>
-            <div style="background:#e5e7eb;padding:12px;text-align:center;font-size:12px;color:#6b7280;border-radius:0 0 8px 8px">
-              MESOB Sululta Branch — One Stop Service Center
-            </div>
-          </div>
-        `,
-      });
+          `,
+        });
+        emailSent = true;
+      } catch (emailErr) {
+        console.error('❌ Failed to send reply email:', emailErr.message);
+        emailSent = false;
+      }
     }
 
-    res.json({ success: true, message: 'Complaint updated.', data: complaint });
+    res.json({
+      success: true,
+      message: 'Complaint updated.',
+      data: complaint,
+      emailSent,
+      emailAddress: emailSent ? complaint.email : null,
+    });
   } catch (err) {
     next(err);
   }
