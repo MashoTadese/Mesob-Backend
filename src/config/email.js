@@ -2,7 +2,6 @@
 // MESOB - Email Service (Nodemailer)
 // ============================================================
 const nodemailer = require('nodemailer');
-const dns        = require('dns').promises;
 
 const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5000';
 
@@ -16,32 +15,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Check if email domain has valid MX records (can receive emails)
-const isEmailDomainValid = async (email) => {
-  try {
-    const domain = email.split('@')[1];
-    if (!domain) return false;
-    const records = await dns.resolveMx(domain);
-    return records && records.length > 0;
-  } catch (err) {
-    return false; // domain does not exist or has no MX records
-  }
-};
-
 // Send email helper — returns { sent: bool, reason: string }
 const sendEmail = async ({ to, subject, html }) => {
   if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'your_gmail@gmail.com') {
     console.log('📧 Email not configured — skipping notification');
     return { sent: false, reason: 'not_configured' };
   }
-
-  // DNS check — verify the email domain can receive emails
-  const domainValid = await isEmailDomainValid(to);
-  if (!domainValid) {
-    console.warn(`⚠️ Email domain invalid or unreachable for: ${to}`);
-    return { sent: false, reason: 'invalid_domain' };
-  }
-
   try {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || 'MESOB Sululta <noreply@mesob.gov.et>',
@@ -59,7 +38,7 @@ const sendEmail = async ({ to, subject, html }) => {
 
 // New complaint notification to admin
 const notifyNewComplaint = (complaint) => sendEmail({
-  to: process.env.NOTIFY_ADMIN_EMAIL || process.env.EMAIL_USER,
+  to:      process.env.NOTIFY_ADMIN_EMAIL || process.env.EMAIL_USER,
   subject: `New Complaint Received — ${complaint.refNumber}`,
   html: `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
@@ -90,7 +69,7 @@ const notifyNewComplaint = (complaint) => sendEmail({
 
 // New contact message notification to admin
 const notifyNewMessage = (msg) => sendEmail({
-  to: process.env.NOTIFY_ADMIN_EMAIL || process.env.EMAIL_USER,
+  to:      process.env.NOTIFY_ADMIN_EMAIL || process.env.EMAIL_USER,
   subject: `New Message: ${msg.subject} — MESOB`,
   html: `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
