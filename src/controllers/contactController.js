@@ -79,7 +79,7 @@ exports.replyToMessage = async (req, res, next) => {
     if (!msg) return res.status(404).json({ success: false, message: 'Message not found.' });
 
     // Send email reply to sender
-    await sendEmail({
+    const result = await sendEmail({
       to: msg.email,
       subject: `Re: ${msg.subject} | MESOB Sululta Branch`,
       html: `
@@ -107,7 +107,13 @@ exports.replyToMessage = async (req, res, next) => {
     // Mark as read and save reply
     await Contact.findByIdAndUpdate(req.params.id, { isRead: true, reply: replyText });
 
-    res.json({ success: true, message: `Reply sent to ${msg.email}` });
+    if (result.sent) {
+      res.json({ success: true, message: `Reply sent to ${msg.email}`, emailSent: true });
+    } else if (result.reason === 'invalid_domain') {
+      res.json({ success: true, message: `Reply saved but email NOT delivered — "${msg.email}" appears to be a fake or invalid email address.`, emailSent: false, emailFailReason: 'invalid_domain' });
+    } else {
+      res.json({ success: true, message: `Reply saved but email could not be sent to ${msg.email}. Reason: ${result.reason}`, emailSent: false, emailFailReason: result.reason });
+    }
   } catch (err) {
     next(err);
   }

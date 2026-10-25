@@ -102,10 +102,11 @@ exports.updateComplaint = async (req, res, next) => {
 
     // Send email response to complainant if they provided email and a response was written
     console.log('📧 Reply check — response:', !!response, '| email:', complaint.email, '| anonymous:', complaint.anonymous);
-    let emailSent = false;
+    let emailSent    = false;
+    let emailFailReason = null;
     if (response && complaint.email && !complaint.anonymous) {
       try {
-        await sendEmail({
+        const result = await sendEmail({
           to: complaint.email,
           subject: `Response to Your Complaint — ${complaint.refNumber} | MESOB Sululta`,
           html: `
@@ -132,10 +133,12 @@ exports.updateComplaint = async (req, res, next) => {
             </div>
           `,
         });
-        emailSent = true;
+        emailSent       = result.sent;
+        emailFailReason = result.reason;
       } catch (emailErr) {
         console.error('❌ Failed to send reply email:', emailErr.message);
-        emailSent = false;
+        emailSent       = false;
+        emailFailReason = 'smtp_error';
       }
     }
 
@@ -144,7 +147,8 @@ exports.updateComplaint = async (req, res, next) => {
       message: 'Complaint updated.',
       data: complaint,
       emailSent,
-      emailAddress: emailSent ? complaint.email : null,
+      emailAddress:   emailSent ? complaint.email : null,
+      emailFailReason: !emailSent ? emailFailReason : null,
     });
   } catch (err) {
     next(err);

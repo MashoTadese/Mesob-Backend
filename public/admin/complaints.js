@@ -207,8 +207,12 @@ async function updateComplaint() {
             alert('✅ Response saved!\n\n⚠️ No email sent — this complaint was submitted anonymously.\n\nStatus set to Resolved.');
           } else if (!complaint.email) {
             alert('✅ Response saved!\n\n⚠️ No email sent — the citizen did not provide an email address.\n\nStatus set to Resolved.');
+          } else if (data.emailFailReason === 'invalid_domain') {
+            alert('✅ Response saved!\n\n❌ Email NOT delivered — the email address "' + complaint.email + '" appears to be fake or invalid.\nThe domain does not exist or cannot receive emails.\n\nPlease note this in your records.');
+          } else if (data.emailFailReason === 'smtp_error') {
+            alert('✅ Response saved!\n\n❌ Email could not be sent to: ' + complaint.email + '\nSMTP error — please check the server email configuration.');
           } else {
-            alert('✅ Response saved!\n\n⚠️ Email could not be sent to: ' + complaint.email + '\nPlease check the server email configuration.\n\nStatus set to Resolved.');
+            alert('✅ Response saved!\n\n⚠️ Email could not be sent to: ' + complaint.email + '\nReason: ' + (data.emailFailReason || 'unknown'));
           }
         }
       } else {

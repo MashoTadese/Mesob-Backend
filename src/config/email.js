@@ -2,6 +2,7 @@
 // MESOB - Email Service (Nodemailer)
 // ============================================================
 const nodemailer = require('nodemailer');
+const dns        = require('dns').promises;
 
 const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5000';
 
@@ -15,12 +16,32 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Send email helper
+// Check if email domain has valid MX records (can receive emails)
+const isEmailDomainValid = async (email) => {
+  try {
+    const domain = email.split('@')[1];
+    if (!domain) return false;
+    const records = await dns.resolveMx(domain);
+    return records && records.length > 0;
+  } catch (err) {
+    return false; // domain does not exist or has no MX records
+  }
+};
+
+// Send email helper — returns { sent: bool, reason: string }
 const sendEmail = async ({ to, subject, html }) => {
   if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'your_gmail@gmail.com') {
     console.log('📧 Email not configured — skipping notification');
-    return;
+    return { sent: false, reason: 'not_configured' };
   }
+
+  // DNS check — verify the email domain can receive emails
+  const domainValid = await isEmailDomainValid(to);
+  if (!domainValid) {
+    console.warn(`⚠️ Email domain invalid or unreachable for: ${to}`);
+    return { sent: false, reason: 'invalid_domain' };
+  }
+
   try {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || 'MESOB Sululta <noreply@mesob.gov.et>',
@@ -29,9 +50,10 @@ const sendEmail = async ({ to, subject, html }) => {
       html,
     });
     console.log(`✅ Email sent to ${to} — MessageId: ${info.messageId}`);
+    return { sent: true, reason: 'sent' };
   } catch (err) {
     console.error(`❌ Email error sending to ${to}:`, err.message);
-    console.error('❌ Full error:', err);
+    return { sent: false, reason: 'smtp_error', error: err.message };
   }
 };
 
