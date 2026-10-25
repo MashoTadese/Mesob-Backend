@@ -6,9 +6,10 @@ const nodemailer = require('nodemailer');
 const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5000';
 
 const transporter = nodemailer.createTransport({
-  host:   process.env.EMAIL_HOST,
-  port:   Number(process.env.EMAIL_PORT) || 587,
-  secure: (Number(process.env.EMAIL_PORT) || 587) === 465,
+  host:    process.env.EMAIL_HOST,
+  port:    Number(process.env.EMAIL_PORT) || 465,
+  secure:  (Number(process.env.EMAIL_PORT) || 465) === 465,
+  family:  4, // Force IPv4 — prevents ENETUNREACH on IPv6-limited servers
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
